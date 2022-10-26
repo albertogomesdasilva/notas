@@ -195,7 +195,56 @@ VIEW RECEBENDO VALORES:
 {{ $b }}
 
 
+### COMENTÁRIOS E CODIFICAÇÃO PHP NO BLADE:
+<h2>Fornecedor</h2>
 
+{{ 'Texto ou variável aqui'}} <br>
+
+<?= 'Teste' $x ?>
+
+{{-- Comentário no Blade --}}
+
+@php
+    // Comentários dentro de uma tab php no blade
+   
+    /*
+        Comentários de múltiplas
+        linhas...
+    */
+
+@endphp
+
+### @if @elseif @else @endif
+
+FornecedorController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class FornecedorController extends Controller
+{
+    public function index(){
+        $fornecedores = ['Fornecedor 1'];
+
+        return view('app.fornecedor.index', compact('fornecedores'));
+    }
+}
+abaixo a view que recebe os valores do controller
+****************************
+view.blade.php
+
+
+<h2>Fornecedor</h2>
+
+@if(count($fornecedores) > 0 && count($fornecedores) <= 10)
+    <h3>Existem alguns fornecedores cadastrados.
+@elseif(count($fornecedores) > 10)
+    <h3>São vários os fornecedores cadastrados</h3>
+@else 
+    <h3> Ainda não existem fornecedores cadastrados.</h3> 
+@endif
 
 
 
