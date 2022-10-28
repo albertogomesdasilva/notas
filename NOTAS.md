@@ -1,4 +1,3 @@
-PAROU EM AULA 46 UDEMY BLADE.  @unless
 
 
 
@@ -249,6 +248,430 @@ view.blade.php
 @else 
     <h3> Ainda não existem fornecedores cadastrados.</h3> 
 @endif
+
+ <?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class FornecedorController extends Controller
+{
+    public function index(){
+        $fornecedores = [
+            0 => [
+                'nome' => 'Fornecedor 1',
+            'status' => 'N',
+            'cnpj' => '00.000.000/0001/00'
+            ],
+            1 => [
+                'nome' => 'Fornecedor 2',
+                'status' => 'S',
+                ]
+            ];
+
+        return view('app.fornecedor.index', compact('fornecedores'));
+    }
+}
+
+<h2>Fornecedor</h2>
+<?php
+    echo 'ALBERTO <br>';
+    if(isset($fornecedores)){
+        echo 'existe com php puro'. '<hr>';
+    }
+?>
+@unless(isset($x))
+    <h2>Bloco com h2 - Não existe a 'x'</h2><br>
+@endunless
+
+@php
+    if(isset($fornecedores))
+    echo 'Bloco php endphp' . '<br>'
+@endphp
+ {{-- //@dd($fornecedores) --}}
+
+{{ 'Fornecedor: '  }} <br>
+
+<?= 'Teste' ?>
+
+{{-- Comentário no Blade --}}
+
+@php
+    // Comentários dentro de uma tab php no blade
+   
+    /*
+        Comentários de múltiplas
+        linhas...
+    */
+@endphp
+
+@if(count($fornecedores) > 0 && count($fornecedores) <= 10)
+    <h3>Existem alguns fornecedores cadastrados.
+@elseif(count($fornecedores) > 10)
+    <h3>São vários os fornecedores cadastrados</h3>
+@else 
+    <h3> Ainda não existem fornecedores cadastrados.</h3> 
+@endif
+<hr>
+@isset ($fornecedores[1]['cnpj'])
+    CNPJ: {{ $fornecedorES[1]['cnpj'] }}
+@unless  ($fornecedores[1]['cnpj'])
+    Este fornecedor não tem CNPJ
+@endunless
+   
+@endisset
+
+<h2>Fornecedor</h2>
+<?php
+    echo 'ALBERTO <br>';
+    if(isset($fornecedores)){
+        echo 'existe com php puro'. '<hr>';
+    }
+?>
+@unless(isset($x))
+    <h2>Bloco com h2 - Não existe a 'x'</h2><br>
+@endunless
+
+@php
+    if(isset($fornecedores))
+    echo 'Bloco php endphp' . '<br>'
+@endphp
+ {{-- //@dd($fornecedores) --}}
+
+{{ 'Fornecedor: '  }} <br>
+
+<?= 'Teste' ?>
+
+{{-- Comentário no Blade --}}
+
+@php
+    // Comentários dentro de uma tab php no blade
+   
+    /*
+        Comentários de múltiplas
+        linhas...
+    */
+@endphp
+
+@if(count($fornecedores) > 0 && count($fornecedores) <= 10)
+    <h3>Existem alguns fornecedores cadastrados.
+@elseif(count($fornecedores) > 10)
+    <h3>São vários os fornecedores cadastrados</h3>
+@else 
+    <h3> Ainda não existem fornecedores cadastrados.</h3> 
+@endif
+<hr>
+@isset ($fornecedores[1]['cnpj'])
+    CNPJ: {{ $fornecedorES[1]['cnpj'] }}
+@endisset
+
+@empty ($fornecedores[1]['cnpj'])
+    -VAZIO
+@endempty
+<hr>
+Operador condicional ternário:
+## VALOR DEFAULT
+<hr>
+CNPJ: {{ $fornecedores[0]['cnpj'] ?? 'Não existe CNPJ' }}  // valor default
+
+### CASE:
+<h2>Fornecedor</h2>
+<?php
+    echo 'ALBERTO <br>';
+    if(isset($fornecedores)){
+        echo 'existe com php puro'. '<hr>';
+    }
+?>
+@unless(isset($x))
+    <h2>Bloco com h2 - Não existe a 'x'</h2><br>
+@endunless
+
+@php
+    if(isset($fornecedores))
+    echo 'Bloco php endphp' . '<br>'
+@endphp
+ {{-- //@dd($fornecedores) --}}
+
+{{ 'Fornecedor: '  }} <br>
+
+<?= 'Teste' ?>
+
+{{-- Comentário no Blade --}}
+
+@php
+    // Comentários dentro de uma tab php no blade
+   
+    /*
+        Comentários de múltiplas
+        linhas...
+    */
+@endphp
+
+@if(count($fornecedores) > 0 && count($fornecedores) <= 10)
+    <h3>Existem alguns fornecedores cadastrados.
+@elseif(count($fornecedores) > 10)
+    <h3>São vários os fornecedores cadastrados</h3>
+@else 
+    <h3> Ainda não existem fornecedores cadastrados.</h3> 
+@endif
+<hr>
+@isset ($fornecedores[1]['cnpj'])
+    CNPJ: {{ $fornecedorES[1]['cnpj'] }}
+@endisset
+
+@empty ($fornecedores[1]['cnpj'])
+    -VAZIO
+@endempty
+<hr>
+Operador condicional ternário:
+<hr>
+CNPJ: {{ $fornecedores[0]['cnpj'] ?? 'Não existe CNPJ' }} <hr>  {{-- valor default --}}
+
+@switch($fornecedores[1]['ddd'])
+    @case ('11')
+        - DDD: {{ $fornecedores[1]['ddd'] }} São Paulo - SP
+        @break
+    @case('32')
+        - DDD: {{ $fornecedores[1]['ddd'] }} Juiz de Fora -MG
+        @break
+    @default
+        Estado não informado
+@endswitch
+
+@@@ @for
+
+<h2>Fornecedor</h2>
+<?php
+    echo 'ALBERTO <br>';
+    if(isset($fornecedores)){
+        echo 'existe com php puro'. '<hr>';
+    }
+?>
+@unless(isset($x))
+    <h2>Bloco com h2 - Não existe a 'x'</h2><br>
+@endunless
+
+@php
+    if(isset($fornecedores))
+    echo 'Bloco php endphp' . '<br>'
+@endphp
+ {{-- //@dd($fornecedores) --}}
+
+{{ 'Fornecedor: '  }} <br>
+
+<?= 'Teste' ?>
+
+{{-- Comentário no Blade --}}
+
+@php
+    // Comentários dentro de uma tab php no blade
+   
+    /*
+        Comentários de múltiplas
+        linhas...
+    */
+@endphp
+
+@if(count($fornecedores) > 0 && count($fornecedores) <= 10)
+    <h3>Existem alguns fornecedores cadastrados.
+@elseif(count($fornecedores) > 10)
+    <h3>São vários os fornecedores cadastrados</h3>
+@else 
+    <h3> Ainda não existem fornecedores cadastrados.</h3> 
+@endif
+<hr>
+@isset ($fornecedores[1]['cnpj'])
+    CNPJ: {{ $fornecedores[1]['cnpj'] }}
+@endisset
+
+@empty ($fornecedores[1]['cnpj'])
+    -VAZIO
+@endempty
+<hr>
+Operador condicional ternário:
+<hr>
+CNPJ: {{ $fornecedores[0]['cnpj'] ?? 'Não existe CNPJ' }} <hr>  {{-- valor default --}}
+
+@switch($fornecedores[1]['ddd'])
+    @case ('11')
+        - DDD: {{ $fornecedores[1]['ddd'] }} São Paulo - SP
+        @break
+    @case('32')
+        - DDD: {{ $fornecedores[1]['ddd'] }} Juiz de Fora -MG
+        @break
+    @default
+        Estado não informado
+@endswitch
+
+<hr>FOR: <br>
+
+
+ @for ($i = 0 ; isset($fornecedores[$i]); $i++)
+    Fornecedor:  {{ $fornecedores[$i]['nome'] }}  <br>
+    Status:     {{ $fornecedores[$i]['status']}}  <br>
+    DDD:     {{ $fornecedores[$i]['ddd']}}  <br>
+    telefone:     {{ $fornecedores[$i]['telefone']}}  <hr>
+
+    @endfor
+
+### @WHILE
+<h2>Fornecedor</h2>
+<?php
+    echo 'ALBERTO <br>';
+    if(isset($fornecedores)){
+        echo 'existe com php puro'. '<hr>';
+    }
+?>
+@unless(isset($x))
+    <h2>Bloco com h2 - Não existe a 'x'</h2><br>
+@endunless
+
+@php
+    if(isset($fornecedores))
+    echo 'Bloco php endphp' . '<br>'
+@endphp
+ {{-- //@dd($fornecedores) --}}
+
+{{ 'Fornecedor: '  }} <br>
+
+<?= 'Teste' ?>
+
+{{-- Comentário no Blade --}}
+
+@php
+    // Comentários dentro de uma tab php no blade
+   
+    /*
+        Comentários de múltiplas
+        linhas...
+    */
+@endphp
+
+@if(count($fornecedores) > 0 && count($fornecedores) <= 10)
+    <h3>Existem alguns fornecedores cadastrados.
+@elseif(count($fornecedores) > 10)
+    <h3>São vários os fornecedores cadastrados</h3>
+@else 
+    <h3> Ainda não existem fornecedores cadastrados.</h3> 
+@endif
+<hr>
+@isset ($fornecedores[1]['cnpj'])
+    CNPJ: {{ $fornecedores[1]['cnpj'] }}
+@endisset
+
+@empty ($fornecedores[1]['cnpj'])
+    -VAZIO
+@endempty
+<hr>
+Operador condicional ternário:
+<hr>
+CNPJ: {{ $fornecedores[0]['cnpj'] ?? 'Não existe CNPJ' }} <hr>  {{-- valor default --}}
+
+@switch($fornecedores[1]['ddd'])
+    @case ('11')
+        - DDD: {{ $fornecedores[1]['ddd'] }} São Paulo - SP
+        @break
+    @case('32')
+        - DDD: {{ $fornecedores[1]['ddd'] }} Juiz de Fora -MG
+        @break
+    @default
+        Estado não informado
+@endswitch
+
+<hr>FOR: <br>
+
+ @for ($i = 0 ; isset($fornecedores[$i]); $i++)
+    Fornecedor:  {{ $fornecedores[$i]['nome'] }}  <br>
+    Status:     {{ $fornecedores[$i]['status']}}  <br>
+    DDD:     {{ $fornecedores[$i]['ddd']}}  <br>
+    telefone:     {{ $fornecedores[$i]['telefone']}}  <hr>
+
+ @endfor
+<hr> WHILE <hr>
+
+@php $i = 0 @endphp
+    @while (isset($fornecedores[$i]))
+        Fornecedor:  {{ $fornecedores[$i]['nome'] }}  <br>
+        Status:     {{ $fornecedores[$i]['status']}}  <br>
+        DDD:     {{ $fornecedores[$i]['ddd']}}  <br>
+        telefone:     {{ $fornecedores[$i]['telefone']}}  <br>
+        @php $i++ @endphp
+    @endwhile
+<hr>
+
+<hr>
+FOREACH
+
+FOREACH - Gera uma cópia do valor original <br>
+
+@foreach ($fornecedores as $indice => $fornecedor)
+  Fornecedor: {{ $fornecedor['nome']}} <br>
+  Status: {{ $fornecedor['status'] }} <br>
+  CNPJ: {{ $fornecedor['cnpj'] ?? '' }} <br>
+  Telefone: ({{ $fornecedor['dd'] ?? '' }})  {{ $fornecedor['telefone'] ?? '' }} <br> <hr>
+
+@endforeach
+
+### @forelse
+### FornecedorController.php
+$fornecedores =[];
+### index.blade.php
+
+@forelse ($fornecedores as $indice => $fornecedor)
+  Fornecedor: {{ $fornecedor['nome']}} <br>
+  Status: {{ $fornecedor['status'] }} <br>
+  CNPJ: {{ $fornecedor['cnpj'] ?? '' }} <br>
+  Telefone: ({{ $fornecedor['dd'] ?? '' }})  {{ $fornecedor['telefone'] ?? '' }} <br> <hr>
+@empty
+        Não existem Registros
+
+@endforelse
+
+
+### ESCAPANDO A FORMA DE IMPRESSÃO
+  Fornecedor: @{{ $fornecedor['nome']}} <br>
+  Status: @{{ $fornecedor['status'] }} <br>
+  CNPJ: @{{ $fornecedor['cnpj'] ?? '' }} <br>
+
+### OBJETO LOOP CRIADO AUTOMATICAMENTE QUANDO USAMOS FOREACH E FORELSE
+<h2>Fornecedor</h2>
+### OBJETO LOOP -> Existe em @foreach e @forelse
+    
+@endforeach
+@forelse ($fornecedores as $indice => $fornecedor)
+@dd($loop)
+    @if($loop->first)
+        => Aqui é a primeira iteração do loop  
+    @endif
+    Iteração Atual: -> {{ $loop->iteration }}<br>
+    Fornecedor: {{ $fornecedor['nome']}} <br>
+    Status: {{ $fornecedor['status'] }} <br>
+    CNPJ: {{ $fornecedor['cnpj'] ?? '' }} <br>  
+    @if($loop->last)
+        => Aqui é a última iteração do loop <hr>
+    @else 
+        <hr>
+    @endif
+@empty
+    Telefone: ({{ $fornecedor['dd'] ?? '' }})  {{ $fornecedor['telefone'] ?? '' }} <br>  <hr>
+        Não existem Registros
+
+@endforelse
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
