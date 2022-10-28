@@ -660,6 +660,10 @@ $fornecedores =[];
 @endforelse
 
 
+### LIMPAR AS VIEWS COMPILADAS NO CACHE 
+
+php artisan view:clear
+
 
 
 
