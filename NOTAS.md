@@ -1,4 +1,4 @@
-### AULA 66 -> ENVIANDO O FORMULÁRIO DE CONTATO VIA POST
+### 81 = MIGRATION: Adicionando campos a uma tabela
 
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
@@ -841,14 +841,6 @@ class ContatoController extends Controller
 
 
 
-
-
-
-
-
-
-
-
 /**************** */
 BLADE.PHP
 <h1>Passando variável direto: {{ $name }} </h1>
@@ -889,6 +881,293 @@ Route::get('/rota2', function(){
 })->name('site.rota2');
 
 //Route::redirect('/rota2', 'rota1');
+
+
+### MÉTODO POST -> Exige o csrf (CROSS-SITE REQUEST FORGERY ou falsificação de solicitação entre sites)
+
+<form action={{ route('site.contato') }} method="post" > 
+@csrf
+    <input type="text" name="nome" placeholder="Nome" class="borda-preta">
+    <br>
+    <input type="text" name="telefone" placeholder="Telefone" class="borda-preta">
+    <br>
+    <input type="text" name="email" placeholder="E-mail" class="borda-preta">
+    <br>
+    <select class="borda-preta">
+        <option value="">Qual o motivo do contato?</option>
+        <option value="1">Dúvida</option>
+        <option value="2">Elogio</option>
+        <option value="3">Reclamação</option>
+    </select>
+    <br>
+    <textarea name="mensagem" class="borda-preta">Preencha aqui a sua mensagem</textarea>
+    <br>
+    <button type="submit" class="borda-preta">ENVIAR</button>
+</form>
+
+ContatoController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ContatoController extends Controller
+{
+    public function contato() {
+
+    use    var_dump($_POST);
+    ou     dd($_POST);
+        return view('site.contato', ['titulo' => 'Contato - titulo vindo do controlador'], ['teste' => 'Alberto Gomes']);
+    }
+}
+
+### incluindo views ou partials @components
+ @component('site.layouts._components.form_contato')
+@endcomponent
+
+### passando parâmetros por @components
+
+   @component('site.layouts._components.form_contato')
+                        <p>A nossa equipe analisará a sua mensagem e retornaremos o mais brevemente possível.</p>
+                        <p> Nosso tempo médio de resposta é de 48horas.</p>
+@endcomponent
+
+NO COMPONENTE ADICIONAMOS A TAG {{ slot }} :
+{{ $slot }}
+<form action={{ route('site.contato') }} method="post" > 
+            @csrf
+            <input type="text" name="nome" placeholder="Nome" class="borda-preta">
+            <br>
+            <input type="text" name="telefone" placeholder="Telefone" class="borda-preta">
+            <br>
+            <input type="text" name="email" placeholder="E-mail" class="borda-preta">
+            <br>
+            <select class="borda-preta">
+                <option value="">Qual o motivo do contato?</option>
+                <option value="1">Dúvida</option>
+                <option value="2">Elogio</option>
+                <option value="3">Reclamação</option>
+            </select>
+            <br>
+            <textarea name="mensagem" class="borda-preta">Preencha aqui a sua mensagem</textarea>
+    <br>
+    <button type="submit" class="borda-preta">ENVIAR</button>
+</form>
+
+principal.blade.php
+
+@extends('site.layouts.basico')
+
+
+@section('titulo', 'Página Principal')
+@section('conteudo')
+      {{-- @include('site.layouts._partials.topo') --}}
+ 
+        <div class="conteudo-destaque">
+        
+            <div class="esquerda">
+                <div class="informacoes">
+                    <h1>Sistema Super Gestão</h1>
+                    <p>Software para gestão empresarial ideal para sua empresa.<p>
+                    <div class="chamada">
+                        <img src="{{asset('/img/check.png') }}">
+                        <span class="texto-branco">Gestão completa e descomplicada</span>
+                    </div>
+                    <div class="chamada">
+                        <img src="{{asset('img/check.png') }}">
+                        <span class="texto-branco">Sua empresa na nuvem</span>
+                    </div>
+                </div>
+
+                <div class="video">
+                    <img src="{{asset('img/player_video.jpg') }} ">
+                </div>
+            </div>
+
+            <div class="direita">
+                <div class="contato">
+                    <h1>Contato</h1>
+                    <p>Caso tenha qualquer dúvida por favor entre em contato com nossa equipe pelo formulário abaixo.<p>
+                     @component('site.layouts._components.form_contato')
+                        <h3> Entraremos em contato: aguarde 48 hs. </h3>
+                    @endcomponent
+                </div>
+            </div>
+        </div>
+  @endsection
+
+  ### SEGUNDA FORMA DE ENVIAR PARÂMETROS POR COMPONENTES @component
+
+  principal.blade.php
+
+    <h1>Contato</h1>
+                    <p>Caso tenha qualquer dúvida por favor entre em contato com nossa equipe pelo formulário abaixo.<p>
+                     @component('site.layouts._components.form_contato', ['x' => 10])
+                        <h3> Entraremos em contato: aguarde 48 hs. </h3>
+@endcomponent
+
+ou 
+
+ <p>Caso tenha qualquer dúvida por favor entre em contato com nossa equipe pelo formulário abaixo.<p>
+                     @component('site.layouts._components.form_contato', ['x' => 'Entraremos em contato: aguarde 48 hs.'])
+                      
+                    @endcomponent
+
+
+form_contato.ph
+    {{ $slot }}
+    {{ $x }}
+
+
+    /************ */
+
+contato.blade.php
+
+@component('site.layouts._components.form_contato', ['x' => '48 horas.'])
+    <p>A nossa equipe analisará a sua mensagem e retornaremos o mais brevemente possível.</p>
+    <p> Nosso tempo médio de resposta é de</p>
+@endcomponent
+
+form_contato.blade.php
+{{ $slot }}
+
+{{ $x }}
+<form action={{ route('site.contato') }} method="post" > 
+    @csrf
+    <input type="text" name="nome" placeholder="Nome" class="borda-preta">
+    <br>
+    <input type="text" name="telefone" placeholder="Telefone" class="borda-preta">
+    <br>
+    <input type="text" name="email" placeholder="E-mail" class="borda-preta">
+    <br>
+    <select class="borda-preta">
+        <option value="">Qual o motivo do contato?</option>
+        <option value="1">Dúvida</option>
+        <option value="2">Elogio</option>
+        <option value="3">Reclamação</option>
+    </select>
+    <br>
+    <textarea name="mensagem" class="borda-preta">Preencha aqui a sua mensagem</textarea>
+<br>
+<button type="submit" class="borda-preta">ENVIAR</button>
+</form>
+
+
+
+### CRIANDO UMA MODEL E SUA MIGRATION
+>php artisan make:model SiteContato -m
+
+Dica - Resolvendo problema do php artisan migrate
+Dica importante para próxima aula enviada pelo João Vitor Moraski. A dica se aplica a você caso você esteja utilizando o sistema operacional Linux na distro Ubuntu 20.04:
+
+
+
+Tive um problema onde sempre que tentava executar a migrate aparecia algo do tipo could not find drive (SQL: PRAGMA foreign_keys = on;).
+
+Algumas pessoas conseguem resolver o erro tirando o ";" de trás da escrita 'extension:pdo_sqlite' no php.ini. O arquivo php ini pode ser localizado por meio do comando php -i | grep 'php.ini' ou pelo comando php --ini (os comandos devem ser executado na linha de comando do sistema operacional).
+
+Porém, se o procedimento acima não funcionar, tente realizar a instalação da extensão em seu sistema operacional. No meu caso, na versão 20.04 do Ubuntu, ocorreu que a extensão não estava instalada por padrão. O comando utilizado na linha de comando do sistema operacional para instalar a extensão é:
+
+sudo apt install php7.4-sqlite3 <- comando para instalar a extensão certa
+
+### SQLITE -> IDEAL PARA PEQUENOS PROJETOS SEM SEGURANÇA. /config/database.php (classe das configurações) -> alterções são feitas em .ven 
+linha9 DB_CONNECTION=sqlite
+
+Se DB_DATABASE não estiver configurada ele adotará o padrão.. Bastando criar um arquivo /database/database.sqlit Dentro da pasta database do projeto.
+
+### Testa se o PDO está carregado:
+>php -r "var_dump(extension_loaded('pdo_mysql'));" 
+
+bool(true)
+
+
+
+
+### CRIANDO E EXCECUTANDO migrations
+2022_10_29_124933_create_site_contatos_table.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('site_contatos', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome', 50);
+            $table->string('telefone', 20);
+            $table->string('email', 80);
+            $table->integer('motivo_contato');
+            $table->text('mensagem');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('site_contatos');
+    }
+};
+ > php artisan migrate
+
+ ### Criando Model e Migration uma de cada vez
+>php artisan make:model Fornecedor 
+
+>php artisan make:migration create_fornecedores_table
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('fornecedores', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome', 50);
+            $table->timestamps();
+        });
+    }
+>php artisan migrate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

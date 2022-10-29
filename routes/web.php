@@ -8,6 +8,8 @@ Route::get('/sobre-nos', [\App\Http\Controllers\SobrenosController::class, 'sobr
 
 Route::get('/contato', [\App\Http\Controllers\ContatoController::class, 'contato'])->name('site.contato');
 
+Route::post('/contato', [\App\Http\Controllers\ContatoController::class, 'contato'])->name('site.contato');
+
 
 
 Route::get('/login', function (){ return 'Login'; })->name('site.login');
