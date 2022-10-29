@@ -1,4 +1,4 @@
-
+### AULA 66 -> ENVIANDO O FORMULÁRIO DE CONTATO VIA POST
 
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
@@ -735,7 +735,6 @@ layout_principal.php
         </div>
 @endsection
 
-
 contato.php
 @extends('site.layouts.basico')
 
@@ -769,15 +768,75 @@ sobre-nos.php
       </div>
 @endsection
 
-########
+######## Se quiser receber parâmetros vindo da view
+CotatoController.php
+<?php
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+class ContatoController extends Controller
+{
+    public function contato() {
+        return view('site.contato', ['titulo' => 'Contato - titulo vindo do controlador']);
+    }
+}
+
+/*** */
+View recebendo parâmetro vindo do controlador 
+contato.blade.php
+@extends('site.layouts.basico')
+
+@section('titulo', $titulo)
+@section('titulo', 'Contato')
+@section('conteudo')
+        <div class="topo">
 
 
 
 
+### INCLUINDO PÁGINAS include (é literalmente uma inclusão)
 
+ @include('site.layouts._partials.topo')
 
+### ENVIANDO O FORMULÁRIO DE CONTATO
+form.blade.php
+<form action={{ route('site.contato') }} method="get" > 
+        <input type="text" name="nome" placeholder="Nome" class="borda-preta">
+        <br>
+        <input type="text" name="telefone" placeholder="Telefone" class="borda-preta">
+        <br>
+        <input type="text" name="email" placeholder="E-mail" class="borda-preta">
+        <br>
+        <select class="borda-preta">
+            <option value="">Qual o motivo do contato?</option>
+            <option value="1">Dúvida</option>
+            <option value="2">Elogio</option>
+            <option value="3">Reclamação</option>
+        </select>
+        <br>
+        <textarea name="mensagem" class="borda-preta">Preencha aqui a sua mensagem</textarea>
+        <br>
+        <button type="submit" class="borda-preta">ENVIAR</button>
+    </form>
 
+web.php
 
+Route::get('/contato', [\App\Http\Controllers\ContatoController::class, 'contato'])->name('site.contato');                    
+
+ContatoController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ContatoController extends Controller
+{
+    public function contato() {
+
+        var_dump($_GET);
+        return view('site.contato', ['titulo' => 'Contato - titulo vindo do controlador'], ['teste' => 'Alberto Gomes']);
+    }
+}
 
 
 
