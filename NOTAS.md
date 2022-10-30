@@ -1482,8 +1482,372 @@ return new class extends Migration
 
 ### ENTENDENDO O ELOQUENT ORM -> Object Relacional Maping nativo do Framework Laravel. O ORM (Mapeamento Objeto Relacional ) é uma técnica para aproximar o paradigma de desenvolvimento de aplicações orientadas a objetos com um banco de dados relacional ( Orientação a Objetos <==> Banco de Dados Relacional). As bibliotecas e frameworks definem como os dados serão mapeados entre os dois ambientes possibilitando o CRUD dimiundo significativamente o tempo de desenvolvimento de aplicações utilizando os recursos do ORM que independente de linguagem de programação. Atualmente dois padrões se destacam no mercado: Data Mapper e Active Record. O Framework Laravel o ORM Eloquente segue o padrão Active Record.
 
-### TINKER -> É um a ferramenta nativa do framework Laravel, é um console interativo que possibilita o acesso as classes do projeto através do terminal. Através do Tinker podemos facilmente manipular as classes relativas aos Models do projeto, podemos instanciar as classes e executar os métodos dos objetos instanciados e os métodos estáticos também, podemos também testar o Mapeamento Objeto Relacional entre as classes relativas ao Models do projeto e o Banco de Dados. Sem o Tinker precisaremos usar uma interface previamente criada ou diretamente no banco de dados, ou através de um script para esse propósito. O Tinker é um atalho para testarmos os Models com o Eloquent ORM.
+### TINKER -> É um a ferramenta nativa do framework Laravel, é um console interativo que possibilita o acesso as classes do projeto através do terminal. Através do Tinker podemos facilmente manipular as classes relativas aos Models do projeto, podemos instanciar as classes e executar os métodos dos objetos instanciados e os métodos estáticos também, podemos também testar o Mapeamento Objeto Relacional entre as classes relativas ao Models do projeto e o Banco de Dados. Sem o Tinker precisaremos usar uma interface previamente criada ou diretamente no banco de dados, ou através de um script para esse propósito. O Tinker é um atalho para testarmos os Models com o Eloquent ORM fazendo a persistência de dados no banco.
+### INSERINDO REGISTROS NO BANCO
 >php artisan tinker
+Psy Shell v0.11.8 (PHP 8.1.11 — cli) by Justin Hileman
+>>> $contato = new SiteContato                                                 
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> App\Models\SiteContato {#3680}
+
+>>> $contato->nome = 'Alberto'                                                 
+=> "Alberto"
+
+>>> $contato->telefone = '98981188434'                                         
+=> "98981188434"
+
+>>> $contato->email = 'albertoogmesdasilva@gmail.com'                          
+=> "albertoogmesdasilva@gmail.com"
+
+>>> $contato->motivo_contato = 1                                               
+=> 1
+
+>>> $contato->mensagem = 'Olá. Gostaria de maiores detalhes..'                 
+=> "Olá. Gostaria de maiores detalhes.."    
+>>> print_r($contato->getAttributes())                                         
+Array
+(
+    [nome] => Alberto
+    [telefone] => 98981188434
+    [email] => albertoogmesdasilva@gmail.com
+    [motivo_contato] => 1
+    [mensagem] => Olá. Gostaria de maiores detalhes..
+)
+=> true
+
+>>> $contato->save()                                                           
+=> true
+### INSERINDO NOVO REGISTRO COM TINKER
+>>> $contato2 = new SiteContato();                                             
+=> App\Models\SiteContato {#4017}
+
+>>> $contato2->nome = 'Maria'                                                  
+=> "Maria"
+
+>>> $contato2->telefone = '98998887777'                                        
+=> "98998887777"
+
+>>> $contato2->email = 'maria@gmail.com'                                       
+=> "maria@gmail.com"
+
+>>> $contato2->mensagem = 'tudo ok..'                                          
+=> "tudo ok.."
+
+>>> $contato2->motivo_contato = 2                                              
+=> 2
+
+>>> print_r($contato2->getAttributes())                                        
+Array
+(
+    [nome] => Maria
+    [telefone] => 98998887777
+    [email] => maria@gmail.com
+    [mensagem] => tudo ok..
+    [motivo_contato] => 2
+)
+=> true
+
+>>> $contato2->save()                                                          
+=> true
+
+### AJUSTANDO O NOME DA TABELA NO MODEL PARA UM CORRETO ORM
+* MODEL: SiteContato.php  ==> site_contato -> nome da tabela no banco de dados.
+* MODEL: Fornecedor.php   ==> fornecedores -> nome da tabela no banco -> Neste caso vamos tentar salvar com o tinker na tabela fornecedores irá gerar um erro:
+>>> $f->save()                                                                 
+Illuminate\Database\QueryException with message 'SQLSTATE[42S02]: Base table or view not found: 1146 Table 'sg.fornecedors' doesn't exist (SQL: insert into `fornecedors` (`nome`, `site`, `uf`, `email`, `updated_at`, `created_at`) values (Fornecedor XYZ, http://fornecedorxyz.com.br, MA, fornecedorxyz@gmail.com.br, 2022-10-30 19:53:51, 2022-10-30 19:53:51))'
+
+para corrigir isto no Model Fornecedor.php incluiremos a linha 
+    protected $table = 'fornecedores';
+
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SiteContato extends Model   //site_contato -> nome da tabela no banco de dados.
+{
+    use HasFactory;
+    protected $table = 'fornecedores';  // Ajustar quando o ORM não consegue salvar na tabela.
+
+}
+
+
+### SALVANDO NO BANCO DE DADOS USANDO O MÉTODO ESTÁTICO HERDADO DA CLASSE MODEL - CREATE (não depende da instância do objeto -> seu uso é mais comum - já usamos na criação das migrations.)
+PARA ISSO ACRESCENTAMOS UMA LINHA DE PERMISSÃO PARA INSERÇÃO DE DADOS NO BANCO:   protected $fillable = ['nome', 'site', 'uf', 'email'];
+Fornecedor.php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Fornecedor extends Model
+{
+    use HasFactory;
+    protected $table = 'fornecedores';
+
+    protected $fillable = ['nome', 'site', 'uf', 'email'];
+
+}
+
+
+>php artisan tinker
+
+Psy Shell v0.11.8 (PHP 8.1.11 — cli) by Justin Hileman
+>>> Fornecedor::create(['nome'=>'Fornecedro ABC', 'site'=>'fornecedor.com.br', 'uf'=>'SP', 'email'=>'contato@abc.com.br']) 
+
+* OBS.: QUALQUER ERRO SAI DO TINKER COM 'quit' e retorna para que o tinker recarregue os Models.
+
+### RECUPERANDO REGISTROS NO BANCO DE DADOS
+* MÉTODO ESTÁTICO ALL -> Recupera todos os registros de uma tabela
+
+>>> $fornecedores = Fornecedor::all()                                          
+=> Illuminate\Database\Eloquent\Collection {#3695
+     all: [
+       App\Models\Fornecedor {#3692
+         id: 1,
+         nome: "Fornecedor XYZ",
+         site: "https://www.albertogomesdasilva.com.br",
+         created_at: "2022-10-30 20:01:42",
+         updated_at: "2022-10-30 20:01:42",
+         uf: "MA",
+         email: "fornecedorxyz@gmail.com.br",
+       },
+       App\Models\Fornecedor {#3689
+         id: 2,
+         nome: "Brascopper-SLZ",
+         site: "https://brascopper-slz.com.br",
+         created_at: "2022-10-30 20:06:03",
+         updated_at: "2022-10-30 20:06:03",
+         updated_at: "2022-10-30 20:14:19",
+         uf: "SP",
+         email: "contato@abc.com.br",
+       },
+     ],
+   }
+
+>>>>>> $r=SiteContato::all()                                                      
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Collection {#4022
+     all: [
+       App\Models\SiteContato {#4637
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4638
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+   - CLASSIFICANDO:
+   >>> $registros->toArray()                                                            
+=> [
+     [
+       "id" => 1,
+       "nome" => "Fornecedor XYZ",
+       "site" => "https://www.albertogomesdasilva.com.br",
+       "created_at" => "2022-10-30T20:01:42.000000Z",
+       "updated_at" => "2022-10-30T20:01:42.000000Z",
+       "uf" => "MA",
+       "email" => "fornecedorxyz@gmail.com.br",
+     ],
+     [
+       "id" => 2,
+       "nome" => "Brascopper-SLZ",
+       "site" => "https://brascopper-slz.com.br",
+       "created_at" => "2022-10-30T20:06:03.000000Z",
+       "updated_at" => "2022-10-30T20:06:03.000000Z",
+       "uf" => "MA",
+       "email" => "brascopperslz@gmail.com.br",
+     ],
+       "email" => "contato@abc.com.br",
+     ],
+   ]
+
+>>> foreach($registros as $r) { echo $r-nome; echo '-';}                             
+                         
+Fornecedor XYZ-Brascopper-SLZ-Fornecedro ABC-⏎
+>>>                                                                                  
+
+
+* MÉTODO ESTÁTICO FIND:
+>>> $buscar = Fornecedor::find(2)                                                    
+=> App\Models\Fornecedor {#5020
+     id: 2,
+     nome: "Brascopper-SLZ",
+     site: "https://brascopper-slz.com.br",
+     created_at: "2022-10-30 20:06:03",
+     updated_at: "2022-10-30 20:06:03",
+     uf: "MA",
+     email: "brascopperslz@gmail.com.br",
+   }
+
+>>>echo $buscar->nome                                                               
+Brascopper-SLZ⏎                  
+
+ou ainda..
+>>> $buscar = Fornecedor::find([1,2,3,4])                                            
+=> Illuminate\Database\Eloquent\Collection {#5019
+     all: [
+       App\Models\Fornecedor {#5014
+         id: 1,
+         nome: "Fornecedor XYZ",
+         site: "https://www.albertogomesdasilva.com.br",
+         created_at: "2022-10-30 20:01:42",
+         updated_at: "2022-10-30 20:01:42",
+         uf: "MA",
+         email: "fornecedorxyz@gmail.com.br",
+       },
+       App\Models\Fornecedor {#5021
+         id: 2,
+         nome: "Brascopper-SLZ",
+         site: "https://brascopper-slz.com.br",
+         created_at: "2022-10-30 20:06:03",
+         updated_at: "2022-10-30 20:06:03",
+         uf: "MA",
+         email: "brascopperslz@gmail.com.br",
+       },
+       App\Models\Fornecedor {#4637
+         id: 3,
+         nome: "Fornecedro ABC",
+         site: "fornecedor.com.br",
+         created_at: "2022-10-30 20:14:19",
+         updated_at: "2022-10-30 20:14:19",
+         uf: "SP",
+         email: "contato@abc.com.br",
+       },
+     ],
+   }
+
+* MÉTODO ESTÁTICO WHERE:          
+
+>>> $contatos = SiteContato::where('id', '>=', 1)->get()                             
+=> Illuminate\Database\Eloquent\Collection {#5012
+     all: [
+       App\Models\SiteContato {#3688
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#5011
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+>>>>>> $contatos = SiteContato::where('nome', '=','Maria')->get()                       
+=> Illuminate\Database\Eloquent\Collection {#5012
+     all: [
+       App\Models\SiteContato {#5020
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+>>> $contatos = SiteContato::where('nome', '<>','Maria')->get()                      
+=> Illuminate\Database\Eloquent\Collection {#5006
+     all: [
+       App\Models\SiteContato {#4645
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+     ],
+   }
+
+* OBS.: QUANDO USAR IGUAL PODEMOS OMITIR O SEGUNDO PARÂMETRO, SIMPLIFICANDO A CONSULTA:
+>>> $contatos = SiteContato::where('nome', 'Maria')->get()                           
+=> Illuminate\Database\Eloquent\Collection {#4999
+     all: [
+       App\Models\SiteContato {#5001
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+   >>> $contatos = SiteContato::where('email', 'like', '%gmail%')->get()                
+=> Illuminate\Database\Eloquent\Collection {#4998
+     all: [
+       App\Models\SiteContato {#5009
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#5016
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+>>>                                                                                  
+
+
+
+
+
+
+
+
 
 
 
