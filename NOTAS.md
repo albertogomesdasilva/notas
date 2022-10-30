@@ -1,4 +1,4 @@
-<!-- ### 81 = MIGRATION: Adicionando campos a uma tabela já existente
+### 81 = MIGRATION: Adicionando campos a uma tabela já existente
 
 
 
@@ -1131,6 +1131,189 @@ return new class extends Migration
         });
     }
 };
+
+### CRIANDO A MIGRATION 2022_10_30_151416_create_produtos_table.php COM VALORES NULOS E DEFAULT (VALOR PADRÃO):
+> php artisan make:migration create_produtos_table <ENTER>
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('produtos', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome', 100);
+            $table->text('descricao')->nullable();
+            $table->integer('peso')->nullable();
+            $table->float('preco_venda', 8, 2)->default(0.01);
+            $table->integer('estoque_minimo')->default(1);
+            $table->integer('estoque_maximo')->default(1);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('produtos');
+    }
+};
+### EXECUTANDO A MIGRATION CRIADA:
+> php artisan migrate
+### CRIANDO MIGRATIONS COM RELACIONAMENTOS DE TABELAS
+> php artisan make:migration create_produto_detalhes_table
+2022_10_30_152706_create_produtos_detalhes_table.php
+
+ * Para fazer o relacionamento de um para um entre tabelas, a chave primária de uma das tabelas do relacionamento, viage para a 
+   outra tabela e lá, essa chave primária que viajou, seja recebida como chave estrageira. Vale lembra que no relacionamento de um para um tanto faz qual a tabela que vai receber a chave estrageira, mais o ideal, por convenção, o indicado é que a chave 
+   primária da tabela mais forte do relacionamento, ou seja, aquela tabela que tem mais impacto no negócio, viage como chave 
+   estrangeira para a tabela mais fraca do relacionamento, ou seja, aquela que tem menos impacto do ponto de vista do negócio.
+   Sendo assim a tabela produto_detalhes tem que ter uma nova coluna "produto_id" para receber a chave primária da tabela "produtos":
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('produto_detalhes', function (Blueprint $table) {
+            // Colunas
+            $table->id();
+
+            $table->unsignedBigInteger('produto_id'); // Por convensão usamos o singular do nome da tabela que envia a chave e o nome da coluna
+
+            $table-> float('comprimento', 8, 2);
+            $table-> float('largura', 8, 2);
+            $table-> float('altura', 8, 2);
+
+            $table->timestamps();
+
+            // Constraint de de integridade referencial
+            $table->foreign('produto_id')->references('id')->on('produtos');
+            // Constraint para garantir que não tenha valor repetido
+            $table->unique('produto_id');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('produto_detalhes');
+    }
+};
+
+>php artisan migrate
+
+### Migration - Adicionando Chaves Estrangeiras (Relacionamento de um para muitos):
+### MÉTODOS UP E MÉTODO DOWN
+>php artisan make:migration create_unicades_table
+2022_10_30_163254_create_unidades_table.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('unidades', function (Blueprint $table) {
+            $table->id();
+            $table->string('unidade', 5);
+            $table->string('decricao', 30);
+            $table->timestamps();
+
+        
+        });
+
+            // adicionar o relacionamento com a tabela produtos
+        Schema::table('produtos', function (Blueprint $table) {
+            $table->unsignedBigInteger('unidade_id');
+            $table->foreign('unidade_id')->references('id')->on('unidades');
+        });
+        
+        // RELACIONAMENTOS NECESSÁRIOS (vamos usar a mesma migration)
+        // adicionar o relacionamento com a tabela produtos_detalhes
+        Schema::table('produto_detalhes', function (Blueprint $table) {
+            $table->unsignedBigInteger('unidade_id');
+            $table->foreign('unidade_id')->references('id')->on('unidades');
+        });
+
+       
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        /* DESFAZENDO TUDO FEITO NO MÉTODO UP */
+        // REMOVENDO AS CHAVES ESTRANGEIRAS
+        // adicionar o relacionamento com a tabela produtos_detalhes
+        Schema::table('produto_detalhes', function(Blueprint $table) {
+            // remover a forekey(fk)
+            $table->dropForeign('produto_detalhes_unidade_id_foreign');   // [table]_[coluna]_foreign ->verificar o nome criado na tablela
+            
+            // remover a coluna unidade_id
+            $table->dropColumn('unidade_id');
+            
+        });
+        
+       
+        // remover o relacionamento com a tabela produtos
+        Schema::table('produtos', function(Blueprint $table) {
+            // remover a forekey(fk)
+            $table->dropForeign('produtos_unidade_id_foreign');   // [table]_[coluna]_foreign ->verificar o nome criado na tablela
+            
+            // remover a coluna unidade_id
+            $table->dropColumn('unidade_id');
+            
+        });
+
+        Schema::dropIfExists('unidades');
+    }
+};
+
+### >php artisan migrate                -> EXECUTA TODOS OS MÉTODO UP CRIANDO AS TABELAS NO BANCO DE DADOS
+### >php artisan migrate:rollback       -> DESFAZ TODOS OS MÉTODOS DOWN DESFAZENDO AS TABELAS DO BANCO DE DADOS
+
+
+
 
 
 
@@ -10487,4 +10670,4 @@ cd olw
 ./vendor/bin/sail up -d
 docker ps
 ./vendor/bin/sail up -d -->
-"# notas"  -->
+"# notas" 
