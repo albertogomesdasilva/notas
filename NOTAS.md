@@ -1480,7 +1480,11 @@ return new class extends Migration
 - >php artisan migrate:refresh -> Reverte todas as migrations e na sequência executa todos os métodos up - apaga o banco de dados e na sequência recria;
 - >php artisan migrate:fresh -> Dropa o banco de dados e executa todas as migrations - zera os id's das tabelas do banco de dados;
 
-### ENTENDENDO O ELOQUENT ORM
+### ENTENDENDO O ELOQUENT ORM -> Object Relacional Maping nativo do Framework Laravel. O ORM (Mapeamento Objeto Relacional ) é uma técnica para aproximar o paradigma de desenvolvimento de aplicações orientadas a objetos com um banco de dados relacional ( Orientação a Objetos <==> Banco de Dados Relacional). As bibliotecas e frameworks definem como os dados serão mapeados entre os dois ambientes possibilitando o CRUD dimiundo significativamente o tempo de desenvolvimento de aplicações utilizando os recursos do ORM que independente de linguagem de programação. Atualmente dois padrões se destacam no mercado: Data Mapper e Active Record. O Framework Laravel o ORM Eloquente segue o padrão Active Record.
+
+### 
+
+
 
 
 
