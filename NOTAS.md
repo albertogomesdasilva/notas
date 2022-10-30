@@ -1,4 +1,4 @@
-### 81 = MIGRATION: Adicionando campos a uma tabela
+### 81 = MIGRATION: Adicionando campos a uma tabela já existente
 
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
@@ -1152,6 +1152,54 @@ return new class extends Migration
         });
     }
 >php artisan migrate
+ ### MIGRATION: Adicionando campos a uma tabela já existente (MÉTODO UP) e DESFAZENDO AS ADIÇÕES (MÉTOD DOWN):
+ ==> COMANDOS: 
+ * Executar a criação das tabelas: php artisan migrate -> acontece da mais antiga para a mais atual
+ * Reverter as migrações: php artisan migrate:rollback -> acontece da mais atual para a mais antiga
+ * Podemos indicar quantos passos(sterps) podemos reverter ou quantas migrates queremos reverter: 
+    > php artisan migrate:rollback  ou php artisan migrate:rollback --step=2
+    > php artisan migrate -> Executa novamente todas as migrations recriando as tabelas e colunas.
+
+ - php artisan make:migration alter_fornecedores_novas_colunas
+
+2022_10_30_144326_alter_fornecedores_novas_colunas.php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        // CRIANDO NOVA COLUNAS NA TABELA
+        Schema::table('fornecedores', function (Blueprint $table) {
+            $table->string('uf', 2);
+            $table->string('email', 150);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        // PARA REMOVER AS COLUNAS CRIADA NO MÉTODO UP
+        Schema::table('fornecedores', function (Blueprint $table) {
+           // $table->$table->dropColumn('uf');
+           // $table->dropColumn('email'); ou podemos usar apenas o comando abaixo passando um array de colunas
+            $table->dropColumn(['uf', 'email']);
+        });
+    }
+};
 
 
 
@@ -1175,7 +1223,7 @@ return new class extends Migration
 
 /***************************** */
 
-<!--  INÍCIO:
+<!--  DOCKER INÍCIO:
 
 1 instalar o docker
 
