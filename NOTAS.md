@@ -1173,6 +1173,13 @@ return new class extends Migration
 };
 ### EXECUTANDO A MIGRATION CRIADA:
 > php artisan migrate
+
+
+
+
+
+
+
 ### CRIANDO MIGRATIONS COM RELACIONAMENTOS DE TABELAS
 > php artisan make:migration create_produto_detalhes_table
 2022_10_30_152706_create_produtos_detalhes_table.php
@@ -1311,6 +1318,177 @@ return new class extends Migration
 
 ### >php artisan migrate                -> EXECUTA TODOS OS MÉTODO UP CRIANDO AS TABELAS NO BANCO DE DADOS
 ### >php artisan migrate:rollback       -> DESFAZ TODOS OS MÉTODOS DOWN DESFAZENDO AS TABELAS DO BANCO DE DADOS
+
+>php artisan migrate:rollback 
+
+### ESTRUTURA DAS TABELAS PRODUTOS, UNIDADES E PRODUTO_DETALHES
+Table: produtos
+Columns:
+id bigint(20) UN AI PK 
+nome varchar(100) 
+descricao text 
+peso int(11) 
+preco_venda double(8,2) 
+estoque_minimo int(11) 
+estoque_maximo int(11) 
+created_at timestamp 
+updated_at timestamp 
+unidade_id bigint(20) UN
+
+Table: unidades
+Columns:
+id bigint(20) UN AI PK 
+unidade varchar(5) 
+decricao varchar(30) 
+created_at timestamp 
+updated_at timestamp
+
+Table: produto_detalhes
+Columns:
+id bigint(20) UN AI PK 
+produto_id bigint(20) UN 
+comprimento double(8,2) 
+largura double(8,2) 
+altura double(8,2) 
+created_at timestamp 
+updated_at timestamp 
+unidade_id bigint(20) UN
+
+Table: unidades
+Columns:
+id bigint(20) UN AI PK 
+unidade varchar(5) 
+decricao varchar(30) 
+created_at timestamp 
+updated_at timestamp
+
+### ADICIONANDO CHAVE ESTRANGEIRAS - RELACIONAMENTO MUITOS PARA MUITOS -> Este tipo de relacionamento sempre envolve uma terceira tabela: vamos criar a tabela filiais e produto_filiais e estabelecer este relacionamento:
+php artisan make:migration ajuste_produtos_filiais
+
+2022_10_30_175104_ajuste_produtos_filiais.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        //Criando a tabela filiais
+        Schema::create('filiais', function (Blueprint $table) {
+            $table->id();
+            $table->string('filial', 30);
+            $table->timestamps();
+        });
+       
+        //Criando a tabela produto_filiais
+        Schema::create('produto_filiais', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('filial_id');
+            $table->unsignedBigInteger('produto_id');
+            $table->decimal('preco_venda', 8, 2);
+            $table->integer('estoque_minimo');
+            $table->integer('estoque_maximo');
+            $table->timestamps();
+
+            //  Constraint de Relacionamentos - foreign key
+            $table->foreign('filial_id')->references('id')->on('filiais');
+            $table->foreign('produto_id')->references('id')->on('produtos');
+        });
+
+        // Removendo colunas da tabela produtos
+        Schema::table('produtos', function (Blueprint $table) {
+           $table->dropColumn(['preco_venda', 'estoque_minimo', 'estoque_maximo']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        // Recriando as colunas da tabela produtos
+        Schema::table('produtos', function (Blueprint $table) {
+            $table->decimal('preco_venda', 8, 2)->default(0.01);
+            $table->integer('estoque_minimo')->default(1);
+            $table->integer('estoque_maximo')->default(1);
+         });
+
+         Schema::dropIfExists('produto_filiais');
+
+         Schema::dropIfExists('filiais');
+    }
+};
+### TESTANDO AS MIGRATES
+>php artisan migrate
+>php artisan migrate:rollback
+
+### MIGRATION -> MODIFICADOR After: Permite que novas colunas sejam inseridas em pontos específicos de uma coluna pre existente: após(after) uma coluna já existente: 'uf' e 'email' que foram colunas adicionadas na tabela 'fornecedores' ficaram no final, vamos criar então uma nova coluna 'site' na tabela 'fornecedores' e indicar a posição que será criada:
+>php artisan make:migration nova_coluna_site_com_after
+
+2022_10_30_182603_nova_coluna_site_com_after.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        //
+        Schema::table('fornecedores', function (Blueprint $table) {
+            $table->string('site', 150)->after('nome')->nullable()->default('https://www.albertogomesdasilva.com.br');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+        Schema::table('fornecedores', function (Blueprint $table) {
+            $table->dropColumn('site');
+        });
+
+    }
+};
+
+### COMANDOS MIGRATIONS: STATUS, RESET, REFRESH E FRESH
+- >php artisan migrate:status -> Verifica se a migration já foi executada;
+- >php artisan migrate:reset -> Executa todos os métodos down da mais atual para a mais antiga e retorna o status das migrations para pedente- apaga o banco de dados por completo;
+- >php artisan migrate:refresh -> Reverte todas as migrations e na sequência executa todos os métodos up - apaga o banco de dados e na sequência recria;
+- >php artisan migrate:fresh -> Dropa o banco de dados e executa todas as migrations - zera os id's das tabelas do banco de dados;
+
+### ENTENDENDO O ELOQUENT ORM
+
+
+
+
+
+
+
+
 
 
 
