@@ -1482,7 +1482,16 @@ return new class extends Migration
 
 ### ENTENDENDO O ELOQUENT ORM -> Object Relacional Maping nativo do Framework Laravel. O ORM (Mapeamento Objeto Relacional ) é uma técnica para aproximar o paradigma de desenvolvimento de aplicações orientadas a objetos com um banco de dados relacional ( Orientação a Objetos <==> Banco de Dados Relacional). As bibliotecas e frameworks definem como os dados serão mapeados entre os dois ambientes possibilitando o CRUD dimiundo significativamente o tempo de desenvolvimento de aplicações utilizando os recursos do ORM que independente de linguagem de programação. Atualmente dois padrões se destacam no mercado: Data Mapper e Active Record. O Framework Laravel o ORM Eloquente segue o padrão Active Record.
 
-### 
+### TINKER -> É um a ferramenta nativa do framework Laravel, é um console interativo que possibilita o acesso as classes do projeto através do terminal. Através do Tinker podemos facilmente manipular as classes relativas aos Models do projeto, podemos instanciar as classes e executar os métodos dos objetos instanciados e os métodos estáticos também, podemos também testar o Mapeamento Objeto Relacional entre as classes relativas ao Models do projeto e o Banco de Dados. Sem o Tinker precisaremos usar uma interface previamente criada ou diretamente no banco de dados, ou através de um script para esse propósito. O Tinker é um atalho para testarmos os Models com o Eloquent ORM.
+>php artisan tinker
+
+
+
+
+
+
+
+
 
 
 
