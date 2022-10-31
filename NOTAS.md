@@ -1,4 +1,4 @@
-### 103 =>  ELOQUENT - SELECIONANDO REGISTROS COM WHERECOLUMN()
+### SEED E FACTORY
 
 
 
@@ -2513,11 +2513,779 @@ Psy Shell v0.11.8 (PHP 8.1.11 — cli) by Justin Hileman
        },
      ],
    }
-                                                                                                                                                                                                                                                                                       
+
+### ELOQUENT - SELECIONANDO REGISTROS COM WHERECOLUMN(): Filtra registros comparando valores de colunas do mesmo registro.
+-> Trará registros onde 'created_at' e 'updated_at' com valores iguais
+### passando apenas dois parâmetros significa ter subtendido o perador de igauldade:
+>>> $contato = SiteContato::whereColumn('created_at', 'updated_at')->get();                       
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Collection {#4383
+     all: [
+       App\Models\SiteContato {#4636
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4637
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+   >>> $contato = SiteContato::whereColumn('created_at', 'updated_at')->get();                       
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Collection {#4383
+     all: [
+       App\Models\SiteContato {#4636
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4637
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+### ELOQUENT - SELECIONANDO REGISTROS COM WHERECOLUMN() -> Suporta 3 parâmetros, podemos usar o operador:
+>>> $contact = SiteContato::whereColumn('created_at', '<>', 'updated_at')->get();                                                             
+=> Illuminate\Database\Eloquent\Collection {#3676
+     all: [
+       App\Models\SiteContato {#3682
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-31 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+   >>> $contact = SiteContato::where('id', '>', 1)->whereColumn('created_at', '>=', 'updated_at')->get();                                        
+=> Illuminate\Database\Eloquent\Collection {#4647
+     all: [
+       App\Models\SiteContato {#4645
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-31 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
+
+### SELECIONANDO REGISTROS APLICANDO PRECEDÊNCIAS EM OPERAÇÕES LÓGICAS
+
+SELECT * FROM site_contatos WHERE (nome = 'Jorge' OR nome = 'Ana') and (motivo_contato in (1, 2) or id between 4 and 7); ==> Resulta o registro de id=7 (Ana).
 
 
 
-/***************************** */
+SELECT * FROM site_contatos WHERE nome = 'Jorge' OR nome 'Ana' and (motivo_contato in (1, 2) or id between 4 and 7;  ===> Resulta os registros 4, 5, 6 e 7 ( Rosa, Fernando, André e Ana).
+
+>>> $contatos = SiteContato::where(function($query){ $query->where('nome', 'Jorge')->orWhere('nome', 'Ana'); })->where(function($query){ $query->whereIn('motivo_contato', [1, 2])->orWhereBeteen('id', [4, 7]); })->get();                                                           
+BadMethodCallException with message 'Call to undefined method Illuminate\Database\Eloquent\Builder::orWhereBeteen()'
+>>> $contatos = SiteContato::where(function($query){ $query->where('nome', 'Jorge')->orWhere('nome', 'Ana'); })->where(function($query){ $q
+uery->whereIn('motivo_contato', [1, 2])->orWhereBetween('id', [4, 7]); })->get();                                                          
+=> Illuminate\Database\Eloquent\Collection {#4652
+     all: [
+       App\Models\SiteContato {#4643
+         id: 7,
+         nome: "Ana",
+         telefone: "(33) 96666-7777",
+         email: "ana@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "Não gostei muito das cores, consigo mudar de tema?",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
+### ELOQUENT - ORDENANDO REGISTROS -> A ordenação pode ser feita com base em uma coluna podendo ser ascendente ou descendente, e é possível também combinar várias ordenações, ou seja, primeiro ordenamos com base em uma coluna e com base nesse resultado utilizamos uma segunda coluna para ordenação e assim consecutivamente de modo encadeado.
+
+- $contatos = SiteContato::all();    -> o método all() exibe tudo;
+- $contatos = SiteContato::orderBy('nome', 'asc')->get();  -> Ordena por nome (padrão é ascendente se não passar o segundo parâmetro 'asc');
+- $contatos = SiteContato::orderBy('nome', 'desc')->get();
+- $contatos = SiteContato::orderBy('motivo_contato')->orderBy('nome', 'asc')->get();
+
+### FILTROS E ORDENAÇÃO:
+>>> $contatos = SiteContato::whereBetween('id', [2,4])->orderBy('motivo_contato')->orderBy('nome','desc')->get();                          
+=> Illuminate\Database\Eloquent\Collection {#4630
+     all: [
+       App\Models\SiteContato {#4638
+         id: 4,
+         nome: "Rosa",
+         telefone: "(33) 92222-3333",
+         email: "rosa@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Quando custa essa aplicação?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4642
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-31 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+       App\Models\SiteContato {#3685
+         id: 3,
+         nome: "João",
+         telefone: "(88) 91111-2222",
+         email: "joao@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "É muito difícil localizar a opção de listar todos os produtos",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
+
+### ELOQUENT ORM -> COLLECTIONS: (laravel.com/docs/8.x/collections) - Available Methods(Métodos disponíveis) -> Quando estamos construindo uma Query nós temos um objeto do tipo 'Builder', no instante em que executamos o método 'get' nós recuperamos com base na query que foi construída um objeto do tipo 'collection', a partir de um objeto do tipo collection podemo aplicar sobre esse objeto os métodos que são nativos dele:
+>>> $resultado = SiteContato::where('id', '>', 5)       
+=> Illuminate\Database\Eloquent\Builder {#4377}  ==> Objeto do tipo Builder
+>>>                             
+=> Illuminate\Database\Eloquent\Collection {#4654
+     all: [
+       App\Models\SiteContato {#4657
+         id: 6,
+         nome: "André",
+         telefone: "(88) 95555-6666",
+         email: "andre@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4653
+         id: 7,
+         nome: "Ana",
+         telefone: "(33) 96666-7777",
+         email: "ana@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "Não gostei muito das cores, consigo mudar de tema?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4015
+         id: 8,
+         nome: "Helena",
+         telefone: "(11) 97777-8888",
+         email: "helena@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Consigo controlar toda a minha empresa de modo fácil e prático.",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
+
+>>> $resultado->get()  ==> Obtenho uma coleção                                         
+* first, last e reverse: 
+>>> $resultador->first()  => Retorna o primeiro elemento
+>>> $resultador->last()  => Retorna o último elemento
+>>> $resultador->reverse() => Inverte a ordem na exibição
+
+### ELOQUENT = COLLECTION TO ARRAY E TO JSON  => Convertem uma coleção de objetos para um array e para um json respectivamente:
+$resultado = SiteContato::all()   -> Retorna uma collection
+>>> $resultado = SiteContato::all()->toArray()  -> A Collection é convertida para um objeto do tipo Array. Quando é feita essa conversão os métodos estáticos de uma coleção, todos os métodos nativos nativos não se aplicam aqui.
+=> [
+     [
+       "id" => 1,
+       "nome" => "Alberto",
+       "telefone" => "98981188434",
+       "email" => "albertoogmesdasilva@gmail.com",
+       "motivo_contato" => 1,
+       "mensagem" => "Olá. Gostaria de maiores detalhes..",
+       "created_at" => "2022-10-30T19:34:37.000000Z",
+       "updated_at" => "2022-10-30T19:34:37.000000Z",
+     ],
+     [
+       "id" => 2,
+       "nome" => "Maria",
+       "telefone" => "98998887777",
+       "email" => "maria@gmail.com",
+       "motivo_contato" => 2,
+       "mensagem" => "tudo ok..",
+       "created_at" => "2022-10-31T19:40:45.000000Z",
+       "updated_at" => "2022-10-30T19:40:45.000000Z",
+     ],
+     [
+       "id" => 3,
+       "nome" => "João",
+       "telefone" => "(88) 91111-2222",
+       "email" => "joao@contato.com.br",
+       "motivo_contato" => 3,
+       "mensagem" => "É muito difícil localizar a opção de listar todos os produtos",
+       "created_at" => null,
+       "updated_at" => null,
+     ],
+     [
+       "id" => 4,
+       "nome" => "Rosa",
+       "telefone" => "(33) 92222-3333",
+       "email" => "rosa@contato.com.br",
+       "motivo_contato" => 1,
+       "mensagem" => "Quando custa essa aplicação?",
+       "created_at" => null,
+       "updated_at" => null,
+     ],
+     [
+       "id" => 5,
+       "nome" => "Fernando",
+       "telefone" => "(11) 94444-5555",
+       "email" => "fernando@contato.com.br",
+       "motivo_contato" => 1,
+       "mensagem" => "Como consigo criar multiplos usuários para minha empresa?",
+       "created_at" => null,
+       "updated_at" => null,
+     ],
+     [
+       "id" => 6,
+       "nome" => "André",
+       "telefone" => "(88) 95555-6666",
+       "email" => "andre@contato.com.br",
+       "motivo_contato" => 2,
+       "mensagem" => "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+       "created_at" => null,
+       "updated_at" => null,
+     ],
+     [
+       "id" => 7,
+       "nome" => "Ana",
+       "telefone" => "(33) 96666-7777",
+       "email" => "ana@contato.com.br",
+       "motivo_contato" => 3,
+       "mensagem" => "Não gostei muito das cores, consigo mudar de tema?",
+       "created_at" => null,
+       "updated_at" => null,
+     ],
+     [
+       "id" => 8,
+       "nome" => "Helena",
+       "telefone" => "(11) 97777-8888",
+       "email" => "helena@contato.com.br",
+       "motivo_contato" => 2,
+       "mensagem" => "Consigo controlar toda a minha empresa de modo fácil e prático.",
+       "created_at" => null,
+       "updated_at" => null,
+     ],
+   ]
+### Convertendo a coleção para Json:
+>>>>>> $resultado = SiteContato::all()->toJson()
+=> "[{"id":1,"nome":"Alberto","telefone":"98981188434","email":"albertoogmesdasilva@gmail.com","motivo_contato":1,"mensagem":"Ol\u00e1. Gostaria de maiores detalhes..","created_at":"2022-10-30T19:34:37.000000Z","updated_at":"2022-10-30T19:34:37.000000Z"},{"id":2,"nome":"Maria","telefone":"98998887777","email":"maria@gmail.com","motivo_contato":2,"mensagem":"tudo ok..","created_at":"2022-10-31T19:40:45.000000Z","updated_at":"2022-10-30T19:40:45.000000Z"},{"id":3,"nome":"Jo\u00e3o","telefone":"(88) 91111-2222","email":"joao@contato.com.br","motivo_contato":3,"mensagem":"\u00c9 muito dif\u00edcil localizar a op\u00e7\u00e3o de listar todos os produtos","created_at":null,"updated_at":null},{"id":4,"nome":"Rosa","telefone":"(33) 92222-3333","email":"rosa@contato.com.br","motivo_contato":1,"mensagem":"Quando custa essa aplica\u00e7\u00e3o?","created_at":null,"updated_at":null},{"id":5,"nome":"Fernando","telefone":"(11) 94444-5555","email":"fernando@contato.com.br","motivo_contato":1,"mensagem":"Como consigo criar multiplos usu\u00e1rios para minha empresa?","created_at":null,"updated_at":null},{"id":6,"nome":"Andr\u00e9","telefone":"(88) 95555-6666","email":"andre@contato.com.br","motivo_contato":2,"mensagem":"Parab\u00e9ns pela ferramenta, estou obtendo \u00f3timos resultados!","created_at":null,"updated_at":null},{"id":7,"nome":"Ana","telefone":"(33) 96666-7777","email":"ana@contato.com.br","motivo_contato":3,"mensagem":"N\u00e3o gostei muito das cores, consigo mudar de tema?","created_at":null,"updated_at":null},{"id":8,"nome":"Helena","telefone":"(11) 97777-8888","email":"helena@contato.com.br","motivo_contato":2,"mensagem":"Consigo controlar toda a minha empresa de modo f\u00e1cil e pr\u00e1tico.","created_at":null,"updated_at":null}]"
+
+### PLUCK -> Permite recuperar todos os valores de uma determinada chave. por exemplo: todos os emails, a partir daí combinar com outros métodos:
+>>> SiteContato::all()->pluck('email')         
+=> Illuminate\Support\Collection {#4657
+     all: [
+       "albertoogmesdasilva@gmail.com",
+       "maria@gmail.com",
+       "joao@contato.com.br",
+       "rosa@contato.com.br",
+       "fernando@contato.com.br",
+       "andre@contato.com.br",
+       "ana@contato.com.br",
+       "helena@contato.com.br",
+     ],
+   }
+
+>>> SiteContato::all()->pluck('email')->first() 
+=> "albertoogmesdasilva@gmail.com"
+
+* OBS.: APÓS CONVERTER EM ARRAY NÃO POSSO CHAMAR OUTROS MÉTODOS NATIVOS, SOMENTE ENQUANTO FOR UMA COLLECTION POSSO ENCADEAR MÉTODOS.
+
+>>> SiteContato::all()->pluck('email')->toArray()->first()
+PHP Error:  Call to a member function first() on array in C:\Users\alber\Desktop\PHP E LARAVEL-9eval()'d code on line 1
+
+>>> SiteContato::all()->pluck('email')->reverse()->first()
+=> "helena@contato.com.br"
+
+### ATRIBUINDO UMA CHAVE PARA A CONSULTA
+>>> SiteContato::all()->pluck('email', 'nome')
+=> Illuminate\Support\Collection {#4663
+     all: [
+       "Alberto" => "albertoogmesdasilva@gmail.com",
+       "Maria" => "maria@gmail.com",
+       "João" => "joao@contato.com.br",
+       "Rosa" => "rosa@contato.com.br",
+       "Fernando" => "fernando@contato.com.br",
+       "André" => "andre@contato.com.br",
+       "Ana" => "ana@contato.com.br",
+       "Helena" => "helena@contato.com.br",
+     ],
+   }                                                                                                                                        
+### PARA CONHECER UM POUCO MAIS SOBRE OS MÉTODOS NATIVOS DOS OBJETOS COLLECTION
+https://laravel.com/docs/8.x/collections
+
+* ex.: >>> SiteContato::all()->pluck('id')                                                                                                        
+=> Illuminate\Support\Collection {#5024
+     all: [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+     ],
+   }
+
+>>> SiteContato::all()->pluck('id')->sum() 
+=> 36
+
+### ATUALIZANDO REGISTROS - save()
+>> $res = SiteContato::all()->first()                                                                                                     
+=> App\Models\SiteContato {#4647
+     id: 1,
+     nome: "Alberto",
+     telefone: "98981188434",
+     email: "albertoogmesdasilva@gmail.com",
+     motivo_contato: 1,
+     mensagem: "Olá. Gostaria de maiores detalhes..",
+     created_at: "2022-10-30 19:34:37",
+     updated_at: "2022-10-30 19:34:37",
+   }
+
+>>>$res = SiteContato::all()->first()
+=> App\Models\SiteContato {#4647
+     id: 1,
+     nome: "Alberto",
+     telefone: "98981188434",
+     email: "albertoogmesdasilva@gmail.com",
+     motivo_contato: 1,
+     mensagem: "Olá. Gostaria de maiores detalhes..",
+     created_at: "2022-10-30 19:34:37",
+     updated_at: "2022-10-30 19:34:37",
+   }
+
+>>> $res -> nome
+=> "Alberto"
+
+>>> $res -> nome = 'Adalberto'
+=> "Adalberto"
+>>> $res->save()
+=> true
+
+>>> dd($res)                                                                                                                               
+App\Models\SiteContato^ {#4647 // vendor\psy\psysh\src\ExecutionLoopClosure.php(55) : eval()'d code:1
+  #connection: "mysql"
+  #table: "site_contatos"
+  #primaryKey: "id"
+  #keyType: "int"
+  +incrementing: true
+  #with: []
+  #withCount: []
+  +preventsLazyLoading: false
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #escapeWhenCastingToString: false
+  #attributes: array:8 [
+    "id" => 1
+    "nome" => "Adalberto"
+    "telefone" => "98981188434"
+    "email" => "adalberto@gmail.com"
+    "motivo_contato" => 1
+    "mensagem" => "Olá. Gostaria de maiores detalhes.."
+    "created_at" => "2022-10-30 19:34:37"
+    "updated_at" => "2022-10-31 20:53:29"
+  ]
+  #original: array:8 [
+    "id" => 1
+    "nome" => "Adalberto"
+    "telefone" => "98981188434"
+    "email" => "adalberto@gmail.com"
+    "motivo_contato" => 1
+    "mensagem" => "Olá. Gostaria de maiores detalhes.."
+    "created_at" => "2022-10-30 19:34:37"
+    "updated_at" => "2022-10-31 20:53:29"
+  ]
+  #changes: array:2 [
+    "email" => "adalberto@gmail.com"
+    "updated_at" => "2022-10-31 20:53:29"
+  ]
+  #casts: []
+  #classCastCache: []
+  #attributeCastCache: []
+  #dates: []
+  #dateFormat: null
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #hidden: []
+  #visible: []
+  #fillable: []
+  #guarded: array:1 [
+    0 => "*"
+  ]
+}
+
+>>> print_r($res)                                                                                                                          
+App\Models\SiteContato Object
+(
+    [connection:protected] => mysql
+    [table:protected] => site_contatos
+    [primaryKey:protected] => id
+    [keyType:protected] => int
+    [incrementing] => 1
+    [with:protected] => Array
+        (
+        )
+
+    [withCount:protected] => Array
+        (
+        )
+
+    [preventsLazyLoading] =>
+    [perPage:protected] => 15
+    [exists] => 1
+    [wasRecentlyCreated] =>
+    [escapeWhenCastingToString:protected] =>
+    [attributes:protected] => Array
+        (
+            [id] => 1
+            [nome] => Adalberto
+            [telefone] => 98981188434
+            [email] => adalberto@gmail.com
+            [motivo_contato] => 1
+            [mensagem] => Olá. Gostaria de maiores detalhes..
+            [created_at] => 2022-10-30 19:34:37
+            [updated_at] => 2022-10-31 20:53:29
+        )
+
+    [original:protected] => Array
+        (
+            [id] => 1
+            [nome] => Adalberto
+            [telefone] => 98981188434
+            [email] => adalberto@gmail.com
+            [motivo_contato] => 1
+            [mensagem] => Olá. Gostaria de maiores detalhes..
+            [created_at] => 2022-10-30 19:34:37
+            [updated_at] => 2022-10-31 20:53:29
+        )
+
+    [changes:protected] => Array
+        (
+        )
+
+    [casts:protected] => Array
+        (
+        )
+
+    [classCastCache:protected] => Array
+        (
+        )
+
+    [attributeCastCache:protected] => Array
+        (
+        )
+
+    [dates:protected] => Array
+        (
+        )
+
+    [dateFormat:protected] =>
+    [appends:protected] => Array
+        (
+        )
+
+    [dispatchesEvents:protected] => Array
+        (
+        )
+
+    [observables:protected] => Array
+        (
+        )
+
+    [relations:protected] => Array
+        (
+        )
+
+    [touches:protected] => Array
+        (
+        )
+
+    [timestamps] => 1
+    [hidden:protected] => Array
+        (
+        )
+
+    [visible:protected] => Array
+        (
+        )
+
+    [fillable:protected] => Array
+        (
+        )
+
+    [guarded:protected] => Array
+        (
+            [0] => *
+        )
+
+)
+=> true
+>>> SiteContato::find(1)                                                                                                                   
+=> App\Models\SiteContato {#4631
+     id: 1,
+     nome: "Adalberto",
+     telefone: "98981188434",
+     email: "adalberto@gmail.com",
+     motivo_contato: 1,
+     mensagem: "Olá. Gostaria de maiores detalhes..",
+     created_at: "2022-10-30 19:34:37",
+     updated_at: "2022-10-31 20:53:29",
+   }
+
+### ATUALIZANDO REGISTROS fill e save
+>>> $res = Fornecedor::find(1)                                                                                                             
+[!] Aliasing 'Fornecedor' to 'App\Models\Fornecedor' for this Tinker session.
+=> App\Models\Fornecedor {#4646
+     id: 1,
+     nome: "Fornecedor XYZ",
+     site: "https://www.albertogomesdasilva.com.br",
+     created_at: "2022-10-30 20:01:42",
+     updated_at: "2022-10-30 20:01:42",
+     uf: "MA",
+=> App\Models\Fornecedor {#4646
+     id: 1,
+     nome: "AGS - Fornecedores",
+     site: "https://www.albertogomesdasilva.com.br",
+     created_at: "2022-10-30 20:01:42",
+     updated_at: "2022-10-30 20:01:42",
+     uf: "MA",
+     email: "fornecedorxyz@gmail.com.br",
+   }
+
+>>> $res->save()
+=> true
+
+### ATUALIZANDO REGISTROS WHERE E UPDATE
+>>> Fornecedor::whereIn('id', [1, 2])                                                                                                      
+=> Illuminate\Database\Eloquent\Builder {#4639}
+>>> Fornecedor::whereIn('id', [1, 2])->get()                                                                                               
+=> Illuminate\Database\Eloquent\Collection {#4635
+     all: [
+       App\Models\Fornecedor {#3681
+         id: 1,
+         nome: "AGS - Logística",
+         site: "http://agslog.com.br",
+         created_at: "2022-10-30 20:01:42",
+         updated_at: "2022-10-31 21:15:09",
+         uf: "MA",
+         email: "agslog@gmail.com",
+       },
+       App\Models\Fornecedor {#4648
+         id: 2,
+         nome: "Brascopper-SLZ",
+         site: "https://brascopper-slz.com.br",
+         created_at: "2022-10-30 20:06:03",
+         updated_at: "2022-10-30 20:06:03",
+         uf: "MA",
+         email: "brascopperslz@gmail.com.br",
+       },
+     ],
+   }
+
+>>> Fornecedor::whereIn('id', [1, 2])->update(['nome'=>'Nova Log', 'site'=>'http://nlog.com.br', 'email'=>'nlog@hotmail.com'])             
+=> 2
+
+>>> Fornecedor::whereIn('id', [1, 2])->get()                                                                                               
+=> Illuminate\Database\Eloquent\Collection {#4418
+     all: [
+       App\Models\Fornecedor {#4631
+         id: 1,
+         nome: "Nova Log",
+         site: "http://nlog.com.br",
+         created_at: "2022-10-30 20:01:42",
+         updated_at: "2022-10-31 21:21:31",
+         uf: "MA",
+         email: "nlog@hotmail.com",
+       },
+       App\Models\Fornecedor {#4641
+         id: 2,
+         nome: "Nova Log",
+         site: "http://nlog.com.br",
+         created_at: "2022-10-30 20:06:03",
+         updated_at: "2022-10-31 21:21:31",
+         uf: "MA",
+         email: "nlog@hotmail.com",
+       },
+     ],
+   }
+
+   >>> Fornecedor::where('id', 1)->update(['nome' => 'AGS - Logística', 'site'=>'http://agslog.com.br', 'email'=>'agslog@gmail.com' ])        
+=> 1
+
+### DELETANDO REGISTROS - DELETE E DESTROY
+>>> SiteContato::where('id', 1)->delete()
+=> 1
+
+>>> SiteContato::find(2)->delete('id', 2)
+=> true
+
+>>> $res = SiteContato::find(4)->delete()
+=> true
+>>> SiteContato::destroy(5)             
+=> 1
+
+>>> SiteContato::destroy(7, 8)   
+=> 2
+### DELETANDO REGISTROS - SOFTDELETE
+
+
+
+
+### FACTORIES - FACTORY -> para popular o banco de dados criamos as factory
+>php artisan make:factory SiteContatoFactory --model SiteContato
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SiteContato>
+ */
+class SiteContatoFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition()
+    {
+        return [
+            'nome' => fake()->name(),
+            'telefone' => fake()->tollFreePhoneNumber(),
+            'email' => fake()->email(),
+            'motivo_contato' => fake()->numberBetween(1,3),
+            'mensagem' => fake()->text(200)
+        ];
+    }
+}
+
+
+>php artisan make:factory FornecedorFactory --model Fornecedor
+
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Fornecedor>
+ */
+class FornecedorFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition()
+    {
+        return [
+            'nome' => fake()->name(),
+            'site' => fake()->tollFreePhoneNumber(),
+            'uf' => fake()->stateAbbr(),
+            'email' => fake()->email(),
+           
+        ];
+    }
+}
+
+### ALTERAMOS O ARQUIVO DatabaseSeeder.php para poder executar:
+/database/seeders/DatabaseSeeder.php
+
+<?php
+
+namespace Database\Seeders;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // \App\Models\User::factory(10)->create();
+         \App\Models\SiteContato::factory(100)->create();
+         \App\Models\Fornecedor::factory(100)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+    }
+}
+
+### EXECUTANDO A SEED E POPULANDO DADOS NO BANCO
+
+>php  artisan db:seed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+###********************-> FIM LARAVEL UDEMY  END <-******************###
 
 <!--  DOCKER INÍCIO:
 
