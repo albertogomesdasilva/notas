@@ -1,4 +1,4 @@
-### 81 = MIGRATION: Adicionando campos a uma tabela já existente
+### 103 =>  ELOQUENT - SELECIONANDO REGISTROS COM WHERECOLUMN()
 
 
 
@@ -1839,54 +1839,681 @@ ou ainda..
      ],
    }
 
->>>                                                                                  
+### WHEREIN => É UMA COMPARAÇÃO POR IGUALDADE
+>php artisan tinker
+Psy Shell v0.11.8 (PHP 8.1.11 — cli) by Justin Hileman
+>>> $contato = SiteContato::whereIn('motivo_contato', [1, 3])                                                                          
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Builder {#3683}
 
+>>> $contato = SiteContato::whereIn('motivo_contato', [1, 3])->get()
 
+=> Illuminate\Database\Eloquent\Collection {#4633
+     all: [
+       App\Models\SiteContato {#4635
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4636
+         id: 3,
+         nome: "João",
+         telefone: "(88) 91111-2222",
+         email: "joao@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "É muito difícil localizar a opção de listar todos os produtos",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4637
+         id: 4,
+         nome: "Rosa",
+         telefone: "(33) 92222-3333",
+         email: "rosa@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Quando custa essa aplicação?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#3684
+         id: 5,
+         nome: "Fernando",
+         telefone: "(11) 94444-5555",
+         email: "fernando@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Como consigo criar multiplos usuários para minha empresa?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4640
+         id: 7,
+         nome: "Ana",
+     ],
+   }
 
+### WHERE NOTIN => COMPARAÇÃO POR DIFERENÇA
 
+* É possível passar quantos parâmetros forem necessários, basta separar os parâmetros por vírgula.
+* O In e NotIn suportam comparações com valores numéricos, strings e datas.
 
+>>> $contatos = SiteContato::whereNotIn('motivo_contato', [1,3])->get()                           
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Collection {#4017
+     all: [
+       App\Models\SiteContato {#4633
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+       App\Models\SiteContato {#4634
+         id: 6,
+         nome: "André",
+         telefone: "(88) 95555-6666",
+         email: "andre@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4635
+         id: 8,
+         nome: "Helena",
+         telefone: "(11) 97777-8888",
+         email: "helena@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Consigo controlar toda a minha empresa de modo fácil e prático.",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
 
+>>> $contatos = SiteContato::whereNotIn('created_at', ['2022-10-30 19:40:45','2022-10-30 19:40:45'
+])->get()                                                                                         
+=> Illuminate\Database\Eloquent\Collection {#3694
+     all: [
+       App\Models\SiteContato {#3685
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+     ],
+   }
 
+### COMPARAÇÃO POR: ESTÁ ENTRE E INCLUSIVE:
+* Pode ser usado tanto para números quanto para datas
+- O EXEMPLO A SEGUIR RETORNARÁ OS ID's 3,4,5,6:
+>>> $res = SiteContato::whereBetween('id', [3, 6])->get()                                         
+=> Illuminate\Database\Eloquent\Collection {#4420
+     all: [
+       App\Models\SiteContato {#3684
+         id: 3,
+         nome: "João",
+         telefone: "(88) 91111-2222",
+         email: "joao@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "É muito difícil localizar a opção de listar todos os produtos",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#3693
+         id: 4,
+         nome: "Rosa",
+         telefone: "(33) 92222-3333",
+         email: "rosa@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Quando custa essa aplicação?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4017
+         id: 5,
+         nome: "Fernando",
+         telefone: "(11) 94444-5555",
+         email: "fernando@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Como consigo criar multiplos usuários para minha empresa?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4633
+         id: 6,
+         nome: "André",
+         telefone: "(88) 95555-6666",
+         email: "andre@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
 
+### WHERENOTBETWIN: RETORNARÁ TUDO QUE NÃO ESTÁ ENTRE O RESCPECTIVO INTERVALO E INCLUSIVE:
+* Pode ser usado tanto para números quanto para datas
+- O EXEMPLO A SEGUIR RETORNARÁ OS ID's 1, 2, 7, 8  EXCLUINDO  3,4,5,6
 
+>>> $res = SiteContato::whereNotBetween('id', [3, 6])->get()                                      
+=> Illuminate\Database\Eloquent\Collection {#4640
+     all: [
+       App\Models\SiteContato {#4636
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4635
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+       App\Models\SiteContato {#4641
+         id: 7,
+         nome: "Ana",
+         telefone: "(33) 96666-7777",
+         email: "ana@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "Não gostei muito das cores, consigo mudar de tema?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4651
+         id: 8,
+         nome: "Helena",
+         telefone: "(11) 97777-8888",
+         email: "helena@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Consigo controlar toda a minha empresa de modo fácil e prático.",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
 
+### SELECIONANDO REGISTROS COM DOIS OU MAIS WHERES - através do objeto query builder do ORM: 
+SELECT * FROM site_contatos WHERE nome <> 'Fernando' and motivo_contato in (1,2) and creted_at between '2022-10-21 00:00:00' and '2022-10-31 23:59:59'; -> Esta consulta SQL retorna dois registros.
+* Neste caso todas operações precisam ser verdadeiras para que o registro seja retornado.
+>>>>>> $contatos = SiteContato::where('nome', '<>', 'Fernando')->whereIn('motivo_contato', [1,2])->w
+hereBetween('created_at', ['2022-10-21 00:00:00', '2022-10-31 00:00:00'])->get()                  
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Collection {#4017
+     all: [
+       App\Models\SiteContato {#4632
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4633
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+>>>                    
 
+### SELECIONANDO REGISTROS COM DOIS OU MAIS ORWHERES - através do objeto query builder do ORM:    
+SELECT * FROM site_contatos WHERE nome <> 'Fernando' or motivo_contato in (1,2) or creted_at between '2022-10-21 00:00:00' and '2022-10-31 23:59:59';
+* Neste caso apenas uma das operações precisa ser verdadeira para que o registro seja retornado.
+>>>  $contatos = SiteContato::where('nome', '<>', 'Fernando')->orwhereIn('motivo_contato', [1,2])-
+>orwhereBetween('created_at', ['2022-10-21 00:00:00', '2022-10-31 00:00:00'])->get()              
+=> Illuminate\Database\Eloquent\Collection {#4632
+     all: [
+       App\Models\SiteContato {#4421
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#3681
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+       App\Models\SiteContato {#4649
+         id: 3,
+         nome: "João",
+         telefone: "(88) 91111-2222",
+         email: "joao@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "É muito difícil localizar a opção de listar todos os produtos",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4650
+         id: 4,
+         nome: "Rosa",
+         telefone: "(33) 92222-3333",
+         email: "rosa@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Quando custa essa aplicação?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4651
+         id: 5,
+         nome: "Fernando",
+         telefone: "(11) 94444-5555",
+         email: "fernando@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Como consigo criar multiplos usuários para minha empresa?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4652
+         id: 6,
+         nome: "André",
+         telefone: "(88) 95555-6666",
+         email: "andre@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4653
+         id: 7,
+         nome: "Ana",
+         telefone: "(33) 96666-7777",
+         email: "ana@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "Não gostei muito das cores, consigo mudar de tema?",
+         created_at: null,
+       },
+     ],
+   }
 
+>>>Podemos ter:
+* OBS.: orWhere, orWhereIn, orWhereNotIn, orWhereBetween ou orWhereNotBetween se não informarmos o 'or' o operador será o 'and' 
+where->
 
+### WHRENULL e WHERENOTNULL
+SELECT * FROM site_contatos WHERE updated_at is null;  (null <> vazio)
+SELECT * FROM site_contatos WHERE updated_at is not null;
+SELECT * FROM site_contatos WHERE updated_at is null;
 
+>>> $contatos = SiteContato::whereNull('updated_at')->get();                                      
+=> Illuminate\Database\Eloquent\Collection {#4638
+     all: [
+       App\Models\SiteContato {#4640
+         id: 3,
+         nome: "João",
+         telefone: "(88) 91111-2222",
+         email: "joao@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "É muito difícil localizar a opção de listar todos os produtos",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4641
+         id: 4,
+         nome: "Rosa",
+         telefone: "(33) 92222-3333",
+         email: "rosa@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Quando custa essa aplicação?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4642
+         id: 5,
+         nome: "Fernando",
+         telefone: "(11) 94444-5555",
+         email: "fernando@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Como consigo criar multiplos usuários para minha empresa?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4643
+         id: 6,
+         nome: "André",
+         telefone: "(88) 95555-6666",
+         email: "andre@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4644
+         id: 7,
+         nome: "Ana",
+         telefone: "(33) 96666-7777",
+         email: "ana@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "Não gostei muito das cores, consigo mudar de tema?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4645
+         id: 8,
+         nome: "Helena",
+         telefone: "(11) 97777-8888",
+         email: "helena@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Consigo controlar toda a minha empresa de modo fácil e prático.",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
 
+### NOTNULL
+>>> $contatos = SiteContato::whereNotNull('updated_at')->get();                                   
+=> Illuminate\Database\Eloquent\Collection {#4646
+     all: [
+       App\Models\SiteContato {#4637
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#3682
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+>>> $contatos = SiteContato::whereNotNull('updated_at')->orWhereNull('created_at')->get();        
+=> Illuminate\Database\Eloquent\Collection {#4637
+     all: [
+       App\Models\SiteContato {#4641
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4658
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+       App\Models\SiteContato {#4659
+         id: 3,
+         nome: "João",
+         telefone: "(88) 91111-2222",
+         email: "joao@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "É muito difícil localizar a opção de listar todos os produtos",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4660
+         id: 4,
+         nome: "Rosa",
+         telefone: "(33) 92222-3333",
+         email: "rosa@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Quando custa essa aplicação?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4661
+         id: 5,
+         nome: "Fernando",
+         telefone: "(11) 94444-5555",
+         email: "fernando@contato.com.br",
+         motivo_contato: 1,
+         mensagem: "Como consigo criar multiplos usuários para minha empresa?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4662
+         id: 6,
+         nome: "André",
+         telefone: "(88) 95555-6666",
+         email: "andre@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Parabéns pela ferramenta, estou obtendo ótimos resultados!",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4663
+         id: 7,
+         nome: "Ana",
+         telefone: "(33) 96666-7777",
+         email: "ana@contato.com.br",
+         motivo_contato: 3,
+         mensagem: "Não gostei muito das cores, consigo mudar de tema?",
+         created_at: null,
+         updated_at: null,
+       },
+       App\Models\SiteContato {#4664
+         id: 8,
+         nome: "Helena",
+         telefone: "(11) 97777-8888",
+         email: "helena@contato.com.br",
+         motivo_contato: 2,
+         mensagem: "Consigo controlar toda a minha empresa de modo fácil e prático.",
+         created_at: null,
+         updated_at: null,
+       },
+     ],
+   }
 
+### SELECIONANDO REGISTROS COM BASE EM PARÂMETROS DO TIPO DATA E HORA
+### WHEREDATE
+o>php artisan tinker
+Psy Shell v0.11.8 (PHP 8.1.11 — cli) by Justin Hileman
+>>> $contatos = SiteContato::whereDate('created_at', '2022-10-30')->get()                         
+[!] Aliasing 'SiteContato' to 'App\Models\SiteContato' for this Tinker session.
+=> Illuminate\Database\Eloquent\Collection {#4418
+     all: [
+       App\Models\SiteContato {#4630
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4631
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+### WHEREDAY
+>>> $contatos = SiteContato::whereDay('created_at', '30')->get()                                  
+=> Illuminate\Database\Eloquent\Collection {#4639
+     all: [
+       App\Models\SiteContato {#4637
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4636
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+### WHEREMONTH
+>>> $contatos = SiteContato::whereMonth('created_at', '10')->get()                                
+=> Illuminate\Database\Eloquent\Collection {#4417
+     all: [
+       App\Models\SiteContato {#4484
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#3683
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+### WHEREYEAR
+>> $contatos = SiteContato::whereYear('created_at', '2022')->get()                               
+=> Illuminate\Database\Eloquent\Collection {#4639
+     all: [
+       App\Models\SiteContato {#4640
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+       App\Models\SiteContato {#4641
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+>>> $contatos = SiteContato::whereTime('created_at', '19:40:45')->get()                           
+=> Illuminate\Database\Eloquent\Collection {#3676
+     all: [
+       App\Models\SiteContato {#3687
+         id: 2,
+         nome: "Maria",
+         telefone: "98998887777",
+         email: "maria@gmail.com",
+         motivo_contato: 2,
+         mensagem: "tudo ok..",
+         created_at: "2022-10-30 19:40:45",
+         updated_at: "2022-10-30 19:40:45",
+       },
+     ],
+   }
 
+>>> $contatos = SiteContato::whereTime('created_at', '<>', '19:40:45')->get()                     
+=> Illuminate\Database\Eloquent\Collection {#4639
+     all: [
+       App\Models\SiteContato {#3676
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+     ],
+   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+>>> $contatos = SiteContato::whereTime('created_at', '<>', '19:40:45')->get()                     
+=> Illuminate\Database\Eloquent\Collection {#4639
+     all: [
+       App\Models\SiteContato {#3676
+         id: 1,
+         nome: "Alberto",
+         telefone: "98981188434",
+         email: "albertoogmesdasilva@gmail.com",
+         motivo_contato: 1,
+         mensagem: "Olá. Gostaria de maiores detalhes..",
+         created_at: "2022-10-30 19:34:37",
+         updated_at: "2022-10-30 19:34:37",
+       },
+     ],
+   }
+                                                                                                                                                                                                                                                                                       
 
 
 
