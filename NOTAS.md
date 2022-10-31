@@ -3170,8 +3170,6 @@ App\Models\SiteContato Object
 
 >>> SiteContato::destroy(7, 8)   
 => 2
-### DELETANDO REGISTROS - SOFTDELETE
-
 
 
 
@@ -3274,6 +3272,221 @@ class DatabaseSeeder extends Seeder
 ### EXECUTANDO A SEED E POPULANDO DADOS NO BANCO
 
 >php  artisan db:seed
+
+
+### DELETANDO REGISTROS - SOFTDELETE -> Criamos uma coluna para marcamos um registro ao invés de excluir.
+importamos com a linha:
+ use Illuminate\Database\Eloquent\SoftDeletes; 
+no Model Fornecedor.php
+
+* Trait -> São pedaços de códigos que definem propriedades e métodos e que podem ser utilizados dentro de uma classe como um especie de include, de CTRL+C CTRL+V, com isso, a classe se expande incorporando as propriedades e métodos dessa respectiva trait. É parecida com extends, mas como não podemos ter herança múltiplas, as traits são utilizadas para poder contornar isso. Na O.O. temos essa restrição de herança multiplas. Implementa uma herança horizontal em vez da vertical de herança múltipla.
+
+Fornecedor.php (Model)
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Fornecedor extends Model
+{
+    use SoftDeletes;
+    
+    use HasFactory;
+    protected $table = 'fornecedores';
+
+    protected $fillable = ['nome', 'site', 'uf', 'email'];
+
+}
+
+O PRÓXIMO PASSO É AJUSTAR A MIGRATION DE CRIAÇÃO DA TABELA fornecedores:
+
+$table->softDeletes();   //Cria a coluna deleted_at na tabela fornecedores
+
+2022_10_29_141119_create_fornecedores_table.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('fornecedores', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome', 50);
+            $table->timestamps();
+          //  $table->softDeletes();   //Cria a coluna deleted_at na tabela fornecedores
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('fornecedores');
+    }
+};
+
+Fazendo assim teremos que dá refresh no banco como um todo... 
+
+### criando a migration para acrescentar a coluna deleted_at ao invés de acrescentar na migration de criação da tabela:
+
+>php artisan make:migration alter_fornecedores_softdelete  
+
+
+2022_10_31_230638_alter_fornecedores_softdelete.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('fornecedores', function(Blueprint $table) {
+            $table->softDeletes();
+        });
+    }
+    
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('fornecedores', function(Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        
+    }
+};
+
+
+>php artisan migrate:status
+
+Migration name ............................................................... Batch / Status  
+  2014_10_12_000000_create_users_table ....................................... [1] Ran  
+  2014_10_12_100000_create_password_resets_table ............................. [1] Ran  
+  2019_08_19_000000_create_failed_jobs_table ................................. [1] Ran  
+  2019_12_14_000001_create_personal_access_tokens_table ...................... [1] Ran  
+  2022_10_29_124933_create_site_contatos_table ............................... [1] Ran  
+  2022_10_29_141119_create_fornecedores_table ................................ [1] Ran  
+  2022_10_30_144326_alter_fornecedores_novas_colunas ......................... [1] Ran  
+  2022_10_30_151416_create_produtos_table .................................... [1] Ran  
+  2022_10_30_152706_create_produtos_detalhes_table ........................... [1] Ran  
+  2022_10_30_163254_create_unidades_table .................................... [1] Ran  
+  2022_10_30_175104_ajuste_produtos_filiais .................................. [1] Ran  
+  2022_10_30_182603_nova_coluna_site_com_after ................................ [1] Ran  
+  2022_10_31_230638_alter_fornecedores_softdelete ............................. Pending  
+
+
+> php artisan migrate
+
+### DELETANDO E PREENCHENDO A COLUNA deleted_at
+>>> $res = Fornecedor::find(1)                                                                                           
+=> App\Models\Fornecedor {#3707
+     id: 1,
+     nome: "Santiago Wintheiser",
+     site: "(888) 524-2135",
+     created_at: "2022-10-31 22:40:51",
+     updated_at: "2022-10-31 22:40:51",
+     uf: "NC",
+     email: "awalsh@yahoo.com",
+     deleted_at: null,
+   }
+
+>>> $res->delete()                                                                                                       
+=> true
+ID   NOME          SITE      CREATED_AT UPDATED_AT  UF      EMAIL             DELETED_AT
+1	Santiago Winth https.ww.com 22:40:51 23:13:33	    NC	awalsh@yahoo.com	2022-10-31 23:13:33
+
+>>> Fornecedor::find(1)                                                                                                  
+=> null
+
+### RESTAURANDO OS REGISTROS REMOVIDOS DE MODO SUAVE (SOFTDELETE)
+* Exibindo os deletados com softDelete
+>>> Fornecedor::withTrashed()->get()                                                                                     
+         updated_at: "2022-10-31 23:13:33",
+         uf: "NC",
+         email: "awalsh@yahoo.com",
+         deleted_at: "2022-10-31 23:13:33",
+       },
+     ],
+   }
+* criando um novo registro:
+
+>>> Fornecedor::create(['nome' => 'Fornec123', 'site'=>'fornec123.com.br', 'uf'=>'MA', 'email'=>'f123@gmail.com'])     
+=> App\Models\Fornecedor {#4079
+     nome: "Fornec123",
+     site: "fornec123.com.br",
+     uf: "MA",
+     email: "f123@gmail.com",
+     updated_at: "2022-10-31 23:30:02",
+     created_at: "2022-10-31 23:30:02",
+     id: 201,
+   }                                                                                                     
+
+* EXIBINDO SOMENTE OS DELETADOS COM SOFTDELETES
+>>> Fornecedor::onlyTrashed()->get()                                                                                   
+=> Illuminate\Database\Eloquent\Collection {#3706
+     all: [
+       App\Models\Fornecedor {#4097
+         id: 1,
+         nome: "Santiago Wintheiser",
+         site: "(888) 524-2135",
+         created_at: "2022-10-31 22:40:51",
+         updated_at: "2022-10-31 23:13:33",
+         uf: "NC",
+         email: "awalsh@yahoo.com",
+         deleted_at: "2022-10-31 23:13:33",   // QUANDO DELETA INSERI A DATA E HORA SOMENTE
+       },
+     ],
+   }
+
+### RESTAURANDO O REGISTRO DELETADO (SOFTDELETES)          
+>>> $res = Fornecedor::withTrashed()->get()                                                                            
+=> Illuminate\Database\Eloquent\Collection {#4077
+     all: [
+       App\Models\Fornecedor {#4100
+         id: 1,
+         nome: "Santiago Wintheiser",
+         site: "(888) 524-2135",
+         created_at: "2022-10-31 22:40:51",
+         email: "f123@gmail.com",
+         deleted_at: null,
+       },
+     ],
+   }
+
+>>> $res[0]->restore()
+=> true
+
+>>> SIMPLISMENTE DELETA O REGISTRO DA COLUNA deleted_at
+
+### SEEDERS (DatabaseSeeder) - (classes conhecidas como sementes)
 
 
 
