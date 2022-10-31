@@ -3176,6 +3176,9 @@ App\Models\SiteContato Object
 
 
 ### FACTORIES - FACTORY -> para popular o banco de dados criamos as factory
+
+### https://github.com/fzaninotto/Faker/
+
 >php artisan make:factory SiteContatoFactory --model SiteContato
 <?php
 
@@ -3209,6 +3212,8 @@ class SiteContatoFactory extends Factory
 >php artisan make:factory FornecedorFactory --model Fornecedor
 
 <?php
+
+### https://github.com/fzaninotto/Faker/
 
 namespace Database\Factories;
 
