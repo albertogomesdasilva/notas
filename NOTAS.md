@@ -1,4 +1,4 @@
-### SEED E FACTORY
+## ==> ## Trabalhando com formulários AULA 120
 
 
 
@@ -3170,12 +3170,246 @@ App\Models\SiteContato Object
 
 >>> SiteContato::destroy(7, 8)   
 => 2
+# php artisan make:seeder SiteContatoSeeder
+# php artisan make:seeder Fornecedor
+### SEEDERS (DatabaseSeeder) - (classes conhecidas como sementes) -> Inserindo poucos registros:
+- Com o banco de dados completamente limpo vamos começar criando o nosso primeiro seed para popular a tabela 'fornecedores':
+
+### php artisan make:seeder FornecedorSeeder  // Não existe convenção, mais o ideal é colocar no final do nome o nome seeder
+# 3 FORMAS DIFERENTES:
+
+FornecedorSeeder.php
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+use App\Fornecedor;
+
+class FornecedorSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // MÉTODO 1 DE FAZER -> Instanciando o objeto
+        $fornecedor = new Fornecedor;
+
+        $fornecedor->nome = 'Fornecedor 100';
+        $fornecedor->site = 'https://fornecedor100.com.br';
+        $fornecedor->uf = 'MA';
+        $fornecedor->emal = 'fornecedor100@gmail.com';
+        $fornecedor->save();
+
+        // MÉTODO 2 DE FAZER => MÉTODO CREATE -> DESTA FORMA NO MODEL Fornecedor.php  DEVE INSERIR A LINHA:
+        // protected $fillable = ['nome', 'site', 'uf', 'email'];
+        Fornecedor::create([
+            'nome'=>'Fornecedor200',
+            'site' => 'https://forn200.com.br',
+            'uf'=> 'RS',
+            'email'=>'forn200@gmail.com'
+        ]);
+
+        // MÉTODO 3 -> USANDO O MÉTODO INSERT
+        DB::table('fornecedores')->insert([
+            'nome'=>'Fornecedor300',
+            'site' => 'https://fornec300.com.br',
+            'uf'=> 'SP',
+            'email'=>'fornec300@hotmail.com'
+        ]);
+    }
+}
+
+# \App\Models\SiteContato::factory(100)->create(); -> esta instrução pode está no DatabaseSeeder.php ou no SiteContatoSeeder.php
+# \App\Models\Fornecedor::factory(100)->create(); -> esta instrução pode está no DatabaseSeeder.php ou no FonnecedorSeeder.php;
+
+->  $this->call(FornecedorSeeder::class);
+->  $this->call(SiteContatoSeeder::class);
+# CONFIGURAR O DatabaseSeeder.php
+
+# para executar a seeder: php artisan db:seed   =>  $this->call(FornecedorSeeder::class);  
+# php artisan db:seed -> Executa todas as seeders
+# >php artisan db:seed --class=SiteContatoSeeder -> Executa uma seed específicada pelo nome
+
+<?php
+
+namespace Database\Seeders;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
+    public function run()
+    {
+         $this->call(FornecedorSeeder::class);  
+
+        //   \App\Models\User::factory(10)->create();
+        //   \App\Models\SiteContato::factory(100)->create();
+        //   \App\Models\Fornecedor::factory(100)->create();
+        //   \App\Models\FornecedorSeeder::class;
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+    }
+}
+
+# FornecedorSeeder.php
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+use App\Models\Fornecedor;
+
+class FornecedorSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $fornecedor = new Fornecedor;
+
+        $fornecedor->nome = 'Fornecedor 100';
+        $fornecedor->site = 'https://fornecedor100.com.br';
+        $fornecedor->uf = 'MA';
+        $fornecedor->email = 'fornecedor100@gmail.com';
+        $fornecedor->save();
+
+        Fornecedor::create([
+            'nome'=>'Fornecedor200',
+            'site' => 'https://forn200.com.br',
+            'uf'=> 'RS',
+            'email'=>'forn200@gmail.com'
+        ]);
+
+    }
+}
+
+# SiteContatoSeeder.php
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+use App\Models\SiteContato;
+
+class SiteContatoSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $sitecontato = new SiteContato;
+
+        $sitecontato->nome = 'Alberto Gomes';
+        $sitecontato->telefone = '98981188434';
+        $sitecontato->email = 'ags@silva.com.br';
+        $sitecontato->motivo_contato = 2;
+        $sitecontato->mensagem = 'Detalhes do produto';
+        $sitecontato->save();
+
+        SiteContato::create([
+            'nome'=>'agsilva',
+            'telefone' => '98988445577',
+            'email'=> 'agsilva@gmail.com',
+            'motivo_contato'=>1,
+            'mensagem'=>'Mais informações.'
+        ]);
+
+    }
+}
+
+# DatabaseSeeder.php
+<?php
+
+namespace Database\Seeders;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // $this->call(FornecedorSeeder::class);
+         $this->call(SiteContatoSeeder::class);
+
+        //   \App\Models\User::factory(10)->create();
+        //   \App\Models\SiteContato::factory(100)->create();
+        //   \App\Models\Fornecedor::factory(100)->create();
+        //   \App\Models\FornecedorSeeder::class;
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+    }
+}
+
+>php artisan migrate:rollback
+>php artisan migrate:fresh
+>php artisan migrate --seed   
+
+   INFO  Running migrations.
+
+  2014_10_12_000000_create_users_table ..................................................... 71ms DONE
+  2014_10_12_100000_create_password_resets_table ........................................... 59ms DONE
+  2019_08_19_000000_create_failed_jobs_table ............................................... 58ms DONE
+  2019_12_14_000001_create_personal_access_tokens_table .................................... 75ms DONE
+  2022_10_29_124933_create_site_contatos_table ............................................. 27ms DONE
+  2022_10_29_141119_create_fornecedores_table .............................................. 26ms DONE
+  2022_10_30_144326_alter_fornecedores_novas_colunas ....................................... 50ms DONE
+  2022_10_30_151416_create_produtos_table .................................................. 30ms DONE
+  2022_10_30_152706_create_produtos_detalhes_table ........................................ 144ms DONE
+  2022_10_30_163254_create_unidades_table ................................................. 291ms DONE
+  2022_10_30_175104_ajuste_produtos_filiais ............................................... 269ms DONE
+  2022_10_30_182603_nova_coluna_site_com_after ............................................. 51ms DONE
+  2022_10_31_230638_alter_fornecedores_softdelete .......................................... 49ms DONE
+
+   INFO  Seeding database.
+
+  Database\Seeders\FornecedorSeeder .................................................... RUNNING  
+  Database\Seeders\FornecedorSeeder .............................................. 11.04 ms DONE  
+
+  Database\Seeders\SiteContatoSeeder ................................................... RUNNING  
+  Database\Seeders\SiteContatoSeeder ............................................. 13.34 ms DONE  
 
 
 
 ### FACTORIES - FACTORY -> para popular o banco de dados criamos as factory
 
 ### https://github.com/fzaninotto/Faker/
+
+# php artisan make:factory SiteContatoFactory --model SiteContato
+# php artisan make:factory SiteContatoFactory --model SiteContato
 
 >php artisan make:factory SiteContatoFactory --model SiteContato
 <?php
@@ -3269,7 +3503,7 @@ class DatabaseSeeder extends Seeder
     }
 }
 
-### EXECUTANDO A SEED E POPULANDO DADOS NO BANCO
+### EXECUTANDO A SEED E POPULANDO DADOS NO BANCO 
 
 >php  artisan db:seed
 
@@ -3486,7 +3720,7 @@ ID   NOME          SITE      CREATED_AT UPDATED_AT  UF      EMAIL             DE
 
 >>> SIMPLISMENTE DELETA O REGISTRO DA COLUNA deleted_at
 
-### SEEDERS (DatabaseSeeder) - (classes conhecidas como sementes)
+
 
 
 
@@ -12839,3 +13073,227 @@ cd olw
 docker ps
 ./vendor/bin/sail up -d -->
 "# notas" 
+
+### FAKER
+Falso#
+Downloads do empacotador Status do fluxo de trabalho do GitHub
+
+Faker é uma biblioteca PHP que gera dados falsos para você. Se você precisa inicializar seu banco de dados, criar documentos XML de boa aparência, preencher sua persistência para testá-lo ou anonimizar dados obtidos de um serviço de produção, o Faker é para você.
+
+É fortemente inspirado por Perl's Data::Faker , e por Ruby's Faker .
+
+Instalação#
+Faker requer PHP >= 7.1.
+
+
+composer require fakerphp/faker
+Uso básico#
+Carregamento automático#
+Faker suporta tanto PSR-0como PSR-4autoloaders.
+
+
+// when installed via composer
+require_once 'vendor/autoload.php';
+Você também pode carregar o autoloader FakersenviadoPSR-0
+
+
+// load Faker autoloader
+require_once '/path/to/Faker/src/autoload.php';
+alternativamente, você pode usar qualquer outro autoloader compatível com PSR-4
+
+Crie dados falsos#
+Use Faker\Factory::create()para criar e inicializar um gerador faker, que pode gerar dados chamando métodos com o nome do tipo de dados desejado.
+
+
+require_once 'vendor/autoload.php';
+
+// use the factory to create a Faker\Generator instance
+$faker = Faker\Factory::create();
+// generate data by calling methods
+echo $faker->name();
+// 'Vince Sporer'
+echo $faker->email();
+// 'walter.sophia@hotmail.com'
+echo $faker->text();
+// 'Numquam ut mollitia at consequuntur inventore dolorem.'
+Cada chamada para $faker->name()produz um resultado diferente (aleatório). Isso ocorre porque o Faker usa __call()magia e encaminha Faker\Generator->$method()chamadas para Faker\Generator->format($method, $attributes).
+
+
+for ($i = 0; $i < 3; $i++) {
+    echo $faker->name() . "\n";
+}
+
+// 'Cyrus Boyle'
+// 'Alena Cummerata'
+// 'Orlo Bergstrom'
+Modificadores#
+Faker fornece três provedores especiais, unique(), optional(), e valid(), para serem chamados antes de qualquer provedor.
+
+
+// unique() forces providers to return unique values
+$values = [];
+for ($i = 0; $i < 10; $i++) {
+    // get a random digit, but always a new one, to avoid duplicates
+    $values []= $faker->unique()->randomDigit();
+}
+print_r($values); // [4, 1, 8, 5, 0, 2, 6, 9, 7, 3]
+
+// providers with a limited range will throw an exception when no new unique value can be generated
+$values = [];
+try {
+    for ($i = 0; $i < 10; $i++) {
+        $values []= $faker->unique()->randomDigitNotNull();
+    }
+} catch (\OverflowException $e) {
+    echo "There are only 9 unique digits not null, Faker can't generate 10 of them!";
+}
+
+// you can reset the unique modifier for all providers by passing true as first argument
+$faker->unique($reset = true)->randomDigitNotNull(); // will not throw OverflowException since unique() was reset
+// tip: unique() keeps one array of values per provider
+
+// optional() sometimes bypasses the provider to return a default value instead (which defaults to NULL)
+$values = [];
+for ($i = 0; $i < 10; $i++) {
+    // get a random digit, but also null sometimes
+    $values []= $faker->optional()->randomDigit();
+}
+print_r($values); // [1, 4, null, 9, 5, null, null, 4, 6, null]
+
+// optional() accepts a weight argument to specify the probability of receiving the default value.
+// 0 will always return the default value; 1.0 will always return the provider. Default weight is 0.5 (50% chance).
+// Please note that the weight can be provided as float (0 / 1.0) or int (0 / 100)
+
+// As float
+$faker->optional($weight = 0.1)->randomDigit(); // 90% chance of NULL
+$faker->optional($weight = 0.9)->randomDigit(); // 10% chance of NULL
+
+// As int
+$faker->optional($weight = 10)->randomDigit; // 90% chance of NULL
+$faker->optional($weight = 100)->randomDigit; // 0% chance of NULL
+
+// optional() accepts a default argument to specify the default value to return.
+// Defaults to NULL.
+$faker->optional($weight = 0.5, $default = false)->randomDigit(); // 50% chance of FALSE
+$faker->optional($weight = 0.9, $default = 'abc')->word(); // 10% chance of 'abc'
+
+// valid() only accepts valid values according to the passed validator functions
+$values = [];
+$evenValidator = function($digit) {
+    return $digit % 2 === 0;
+};
+for ($i = 0; $i < 10; $i++) {
+    $values []= $faker->valid($evenValidator)->randomDigit();
+}
+print_r($values); // [0, 4, 8, 4, 2, 6, 0, 8, 8, 6]
+
+// just like unique(), valid() throws an overflow exception when it can't generate a valid value
+$values = [];
+try {
+    $faker->valid($evenValidator)->randomElement([1, 3, 5, 7, 9]);
+} catch (\OverflowException $e) {
+    echo "Can't pick an even number in that set!";
+}
+Se você quiser usar um modificador com um valor não gerado pelo Faker, use o passthrough()método. passthrough() simplesmente retorna qualquer valor que foi dado.
+
+
+$faker->optional()->passthrough(mt_rand(5, 15));
+Localização#
+Faker\Factorypode receber uma localidade como argumento, para retornar dados localizados. Se nenhum provedor localizado for encontrado, a fábrica retornará à localidade padrão (en_US).
+
+
+// create a French faker
+$faker = Faker\Factory::create('fr_FR');
+for ($i = 0; $i < 3; $i++) {
+    echo $faker->name() . "\n";
+}
+
+// Luce du Coulon
+// Auguste Dupont
+// Roger Le Voisin
+Você pode verificar as localidades do Faker disponíveis no código-fonte, no Providerdiretório . A localização do Faker é um processo contínuo, para o qual precisamos da sua ajuda. Não hesite em criar provedores localizados para sua própria localidade e enviar um PR!
+
+Semeando o Gerador#
+Você pode querer sempre obter os mesmos dados gerados - por exemplo, ao usar o Faker para fins de teste de unidade. O gerador oferece um seed()método que propaga o gerador de números aleatórios. Chamar o mesmo script duas vezes com a mesma semente produz os mesmos resultados.
+
+
+$faker = Faker\Factory::create();
+$faker->seed(1234);
+
+echo $faker->name(); // 'Jess Mraz I';
+Dica
+Os formatadores DateTime não reproduzirão os mesmos dados falsos se você não corrigir o $maxvalor:
+
+
+// even when seeded, this line will return different results because $max varies
+$faker->dateTime(); // equivalent to $faker->dateTime($max = 'now')
+// make sure you fix the $max parameter
+$faker->dateTime('2014-02-25 08:37:17'); // will return always the same date when seeded
+Dica
+Os formatadores não reproduzirão os mesmos dados falsos se você usar a rand()função php. Use $fakerou mt_rand()em vez disso:
+
+
+// bad
+$faker->realText(rand(10, 20));
+// good
+$faker->realText($faker->numberBetween(10, 20));
+Faker Internals: Entendendo os Provedores#
+Um Faker\Generatorsozinho não pode fazer muita geração. Ele precisa Faker\Providerde objetos para delegar a geração de dados a eles. Faker\Factory::create()realmente cria um Faker\Generatorpacote com os provedores padrão. Aqui está o que acontece sob o capô:
+
+
+$faker = new Faker\Generator();
+$faker->addProvider(new Faker\Provider\en_US\Person($faker));
+$faker->addProvider(new Faker\Provider\en_US\Address($faker));
+$faker->addProvider(new Faker\Provider\en_US\PhoneNumber($faker));
+$faker->addProvider(new Faker\Provider\en_US\Company($faker));
+$faker->addProvider(new Faker\Provider\Lorem($faker));
+$faker->addProvider(new Faker\Provider\Internet($faker));
+Sempre que você tenta acessar uma propriedade do $fakerobjeto, o gerador procura um método com o mesmo nome em todos os provedores anexados a ele. Por exemplo, chamar $faker->nameaciona uma chamada para Faker\Provider\Person::name(). E como o Faker começa com o último provedor, você pode facilmente substituir os formatadores existentes: basta adicionar um provedor contendo métodos nomeados de acordo com os formatadores que você deseja substituir.
+
+Isso significa que você pode adicionar facilmente seus próprios provedores a uma Faker\Generatorinstância. Um provedor geralmente é uma classe que estende o \Faker\Provider\Base. Essa classe pai permite que você use métodos como lexify()ou randomNumber(); também lhe dá acesso a formatadores de outros provedores, através da $generatorpropriedade protegida. Os novos formatadores são os métodos públicos da classe do provedor.
+
+Aqui está um exemplo de provedor para preencher dados de livros:
+
+
+namespace Faker\Provider;
+
+class Book extends \Faker\Provider\Base
+{
+  public function title($nbWords = 5)
+  {
+    $sentence = $this->generator->sentence($nbWords);
+    return substr($sentence, 0, strlen($sentence) - 1);
+  }
+
+  public function ISBN()
+  {
+    return $this->generator->ean13();
+  }
+}
+Para registrar este provedor, basta adicionar uma nova instância de \Faker\Provider\Booka um gerador existente:
+
+
+$faker->addProvider(new \Faker\Provider\Book($faker));
+Agora você pode usar os dois novos formatadores como qualquer outro formatador Faker:
+
+
+$book = new Book();
+$book->setTitle($faker->title());
+$book->setISBN($faker->ISBN());
+$book->setSummary($faker->text());
+$book->setPrice($faker->randomNumber(2));
+Dica
+Um provedor também pode ser um Plain Old PHP Object. Nesse caso, todos os métodos públicos do provedor ficam disponíveis para o gerador.
+
+Formatadores específicos de idioma#
+As localidades suportadas podem ser encontradas no cabeçalho "Locales" à esquerda.
+
+Localidades com nomes errados#
+Nome atual	Nome correto
+at_AT	de_AT
+zh_CN	zh_Hans_CN
+zh_TW	zh_Hant_TW
+Fonte: https://www.localeplanet.com/icu/
+
+Licença#
+Faker é lançado sob a licença MIT. Consulte o arquivo LICENSE incluído para obter detalhes.
