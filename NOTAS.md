@@ -1,4 +1,4 @@
-## ==> ## Trabalhando com formulários AULA 120
+## ==> ## REPOPULANDO O FORMULARIO OLD INPUT PARTE 2 NO INPUT SELECT do formulário AULA 125
 
 
 
@@ -3720,8 +3720,183 @@ ID   NOME          SITE      CREATED_AT UPDATED_AT  UF      EMAIL             DE
 
 >>> SIMPLISMENTE DELETA O REGISTRO DA COLUNA deleted_at
 
+### ENTENDENDO O OBJETO REQUEST
+# ROTA -> web.php
+Route::get('/contato', [\App\Http\Controllers\ContatoController::class, 'contato'])->name('site.contato');
 
+# ContatoController.php
+<?php
 
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class ContatoController extends Controller
+{
+    public function contato(Request $request) {
+
+      //  var_dump($_POST);
+      // dd($_POST);
+      echo '<pre>';
+       print_r($request->all());
+       echo '<hr>';
+       print_r($_POST);
+      echo '</pre>';
+      echo $request->input('nome') . '<br>';
+      echo $request->input('email') . '<hr>';
+        return view('site.contato', ['titulo' => 'Contato - titulo vindo do controlador'], ['teste' => 'Alberto Gomes']);
+    }
+}
+
+# view localhost:8000/contato (depois de preenchido e enviado) - Exibição na view contato;
+Array
+(
+    [_token] => iseKKj7lQwd4Jm0tpCp4q1qAdjHj20ANtLLZtVo9
+    [nome] => Alberto Gomes
+    [telefone] => 9999999999
+    [email] => albe@gmail.com
+    [mensagem] => aestou com uma dúvida
+)
+Array
+(
+    [_token] => iseKKj7lQwd4Jm0tpCp4q1qAdjHj20ANtLLZtVo9
+    [nome] => Alberto Gomes
+    [telefone] => 9999999999
+    [email] => albe@gmail.com
+    [mensagem] => aestou com uma dúvida
+)
+Alberto Gomes
+albe@gmail.com
+
+### GRAVANDO OS DADOS DO FORMULÁRIO NO BANCO DE DADOS:
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\SiteContato;
+
+class ContatoController extends Controller
+{
+    public function contato(Request $request) {
+
+      // //  var_dump($_POST);
+      // // dd($_POST);
+      // echo '<pre>';
+      //  print_r($request->all());
+      //  echo '<hr>';
+      //  print_r($_POST);
+      // echo '</pre>';
+      // echo $request->input('nome') . '<br>';
+      // echo $request->input('email') . '<hr>';
+       
+      $contato = new SiteContato;
+      // $contato->nome = $request->input('nome');
+      // $contato->telefone = $request->input('telefone');
+      // $contato->email = $request->input('email');
+      // $contato->motivo_contato = $request->input('motivo_contato');
+      // $contato->mensagem = $request->input('mensagem');
+
+      $contato->fill($request->all());      // PRECISO DA LINHA '$contato->save();' PARA USAR ESTE MÉTODO, 
+                                             //   USANDO ESSE   MÉTODO E O 'fill' NA MODEL SiteContato.php ADICIONAR 
+                                              // O ATTRUBUTO $fillable
+      $contato->create($request->all());    AQUI NÃO PRECISO DA LINHA: $contato->save();  //TAMBÉM PARA USAR ESTE MÉTODO 'create' NA MODEL SiteContato.php ADICIONAR O ATTRUBUTO $fillable
+      
+      $contato->save();  // ==> SALVA NO BANCO DE DADOS
+
+     print_r($contato->getAttributes());
+    //  print_r($_POST);
+
+        return view('site.contato', ['titulo' => 'Contato (teste)']);   // PASSANDO O TÍTULO POR VARIÁVEL COMO PARÂMETRO 
+    }
+}
+
+# MODEL SiteContato.php
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SiteContato extends Model
+{
+    use HasFactory;
+    // protected $table = 'site_contatos';
+
+     protected $fillable = ['nome', 'telefone','email', 'motivo_contato', 'mensagem']; // necessário para os métodos fill e create
+}
+
+### VAIDAÇÃO DE CAMPOS OBRIGATÓRIOS - required
+laravel.com/docs/7.x/validation
+
+#Available Validation Rules
+
+-> Validação de dados do lado do backend da aplicação
+ContatoController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\SiteContato;
+
+class ContatoController extends Controller
+
+    public function salvar(Request $request) {
+
+      // REALIZAR A VALIDAÇÃO DOS DADOS RECEBIDOS - A VARIÁVEL $erros DO lARAVEL ESTÁ DISPONIVEL PARA ISSO EM QUALQUER VIEW
+        $request->validate([
+          'nome' => 'required',
+          'telefone' => 'required',
+          'email' => 'required',
+          'motivo_contato' => 'required',
+          'mensagem' => 'required',
+        ]);
+
+### VALIDAÇÃO DE QUANTIDADES MÍNIMAS E MÁXIMSA DE CARACTERES (min e max)
+
+laravel.com/docs/7.x/validation
+
+#Available Validation Rules
+
+   'nome' => 'required|min:3|max:40',  //Nomes de 3 a 40 caracteres permitido nesse campo
+
+### REPOPULAR O FORMULÁRIO COM O CONTEÚDO ANTES DO ERRO
+Recuperando os dados do formulário com o conteúdo que foi digitado ao ocorrer o erro.
+
+* old()
+
+for_contato.php
+{{ $slot }}
+
+{{ $x }}
+
+<form action={{ route('site.contato') }} method="post" > 
+            @csrf
+            <input name="nome" value="{{ old('nome') }}"  type="text" placeholder="Nome" class="{{ $classe }}">
+            <br>
+            <input type="text" name="telefone" value="{{ old('telefone') }}" placeholder="Telefone" class="{{ $classe }}">
+            <br>
+            <input type="text" name="email" value="{{ old('email') }}" placeholder="E-mail" class="{{ $classe }}">
+            <br>
+            <select name="motivo_contato" class="{{ $classe }}">
+                <option value="">Qual o motivo do contato?</option>
+                <option value="1">Dúvida</option>
+                <option value="2">Elogio</option>
+                <option value="3">Reclamação</option>
+            </select>
+            <br>
+            <textarea name="mensagem" value="{{ old('mensagem') }}" class="{{ $classe }}" placeholder="Preencha aqui a sua mensagem"> {{ (old('mensagem') != '') ?  old('mensagem')  :'' }} </textarea>
+    <br>
+    <button type="submit" class="btn btn-suces">ENVIAR</button>
+</form>
+<div style="position:absolute; top:0px; left:0px; width:100%; height: 150px; background: orange; color: red;">
+{{ print_r($errors); }}
+</div>
 
 
 
