@@ -1,6 +1,8 @@
  ->  AULA 125
 
+### composer require laravel/breeze --dev
 
+### ./vendor/bin/sail artisan breeze:install vue  (instala autenticação, rota autentica, talwingcss e inértia).
 
 ## Laravel Sponsors
 
