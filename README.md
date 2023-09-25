@@ -7,7 +7,7 @@
   </head>
     <body>
     <div class="container">
-      Notas
+      <h1>Notas</h1>
       <button class="btn btn-success" hx-get="177.153.258.50:3333/despesas">clique aqui</button>
     </div>
     </body>
