@@ -15,6 +15,9 @@
         <hr>
         <div style="background-color: red; color: #ccc">
         </div>
+        <hr>
+        https://htmx.org/docs/#websockets-and-sse
+        <hr>
     </div>
     </body>
 </html>
