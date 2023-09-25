@@ -13,7 +13,8 @@
       <form class="form-control">
         <input class="form-control">
         </form>
-        <div style="background-color: red; color: #fff">
+        <hr>
+        <div style="background-color: red; color: #ccc">
         </div>
       
     </div>
