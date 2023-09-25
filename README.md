@@ -16,7 +16,6 @@
         <hr>
         <div style="background-color: red; color: #ccc">
         </div>
-      
     </div>
     </body>
 </html>
