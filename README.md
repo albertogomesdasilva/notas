@@ -7,7 +7,7 @@
   </head>
     <body>
     <div class="container">
-      <button hx-get="http://177.153.258.50:3333/despesas">clique</button>
+      <button class="btn btn-success" hx-get="177.153.258.50:3333/despesas">clique aqui</button>
     </div>
     </body>
 </html>
