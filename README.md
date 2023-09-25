@@ -8,14 +8,6 @@
     <div class="container">
       <h1>Notas</h1>
       <a  class="btn btn-success" href="http://albertogomesdasilva.com" >clique aqui</a>
-      <hr>
-      <form class="form-control">
-        <input class="form-control">
-        </form>
-        <hr>
-        <div style="background-color: red; color: #ccc">
-        </div>
-        <hr>
         <hr>
     </div>
     </body>
