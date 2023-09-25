@@ -7,7 +7,7 @@
     <body>
     <div class="container">
       <h1>Notas</h1>
-      <a  class="btn btn-success" href="http://albertogomesdasilva.com" >clique aqui</a>
+      <a  class="btn btn-success" href="http://albertogomesdasilva.com.br" >clique aqui</a>
         <hr>
     </div>
     </body>
