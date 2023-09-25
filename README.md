@@ -9,6 +9,11 @@
     <div class="container">
       <h1>Notas</h1>
       <button class="btn btn-success" hx-get="177.153.258.50:3333/despesas">clique aqui</button>
+      <hr>
+      <form class="form-control">
+        <input class="form-control" />
+      
+      </form>
     </div>
     </body>
 </html>
