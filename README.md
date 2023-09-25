@@ -7,7 +7,7 @@
     <body>
     <div class="container">
       <h1>Notas</h1>
-      <a  class="btn btn-success" href="http://www.albertogomesdasilva.com" >clique aqui</a>
+      <a  class="btn btn-success" href="http://albertogomesdasilva.com" >clique aqui</a>
       <hr>
       <form class="form-control">
         <input class="form-control">
