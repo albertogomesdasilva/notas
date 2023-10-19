@@ -18231,7 +18231,61 @@ export default {
     plugins: [forms, typography],
 };
 
-# vite.config.js -> fica assim
+
+# vite.config.js -> acrescenta duas linhas: use Illuminate\Support\ServiceProvider; e  Paginator::useBootstrap();
+use Illuminate\Pagination\Paginator;
+App/Providers/AppServiceProvider.php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;  // ESTA 
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Paginator::useBootstrap();  ///ESTA 
+    }
+}
+*****
+vite.config.js
+
+import { defineConfig } from 'vite';
+import laravel, { refreshPaths } from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+
+                'resources/css/filament.css',     // INSERIDA ESTA LINHA AQUI
+                
+                'resources/js/app.js',
+            ],
+            refresh: [
+                ...refreshPaths,
+                'app/Http/Livewire/**',
+
+
+            ],
+        }),
+    ],
+});
+
 
 import { defineConfig } from 'vite';
 import laravel, { refreshPaths } from 'laravel-vite-plugin';
