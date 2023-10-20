@@ -18230,7 +18230,14 @@ export default {
 
     plugins: [forms, typography],
 };
-
+## CORRIGIR SETA LINK PAGINATION BOOTSTRAP SETA GRANDE ->
+AppServiceProvider.php
+use Illuminate\Pagination\Paginator; 
+ public function boot()
+    {
+        Paginator::useBootstrap();
+    }
+    
 
 # vite.config.js -> acrescenta duas linhas: use Illuminate\Support\ServiceProvider; e  Paginator::useBootstrap();
 use Illuminate\Pagination\Paginator;
